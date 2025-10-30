@@ -1,0 +1,1 @@
+  Reservas esta semana:  . $bookingsThisWeek . / . $plan- . PHP_EOL

@@ -1,0 +1,39 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar {
+    min-height: 100vh;
+    background-color: #2c3e50;
+}
+
+.sidebar .nav-link {
+    color: #ecf0f1;
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background-color: #34495e;
+    color: #fff;
+}
+
+.content-wrapper {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.card-stats {
+    border-left: 4px solid #007bff;
+}
+
+.table-actions .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
