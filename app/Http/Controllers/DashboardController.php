@@ -45,7 +45,7 @@ class DashboardController extends Controller
                 DB::raw('COUNT(*) as count')
             )
             ->where('schedules.starts_at', '>=', now()->subDays(7))
-            ->groupBy('date')
+            ->groupBy(DB::raw('DATE(schedules.starts_at)'))
             ->orderBy('date')
             ->get();
 
@@ -161,7 +161,7 @@ class DashboardController extends Controller
                 DB::raw('COUNT(*) as count')
             )
             ->where('schedules.starts_at', '>=', now()->subDays(30))
-            ->groupBy('date')
+            ->groupBy(DB::raw('DATE(schedules.starts_at)'))
             ->orderBy('date')
             ->get()
             ->map(function ($item) {
