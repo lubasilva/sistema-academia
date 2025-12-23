@@ -12,6 +12,10 @@
                 <i class="bi bi-calendar-week"></i> Agenda
             </a>
             
+            <a href="{{ route('workouts.index') }}" class="nav-link {{ request()->routeIs('workouts.*') ? 'active' : '' }}">
+                <i class="bi bi-clipboard-data"></i> Treinos
+            </a>
+            
             @if(auth()->user()->role === 'admin')
             <hr class="bg-secondary">
             <h6 class="text-white-50 text-uppercase small px-3">Administração</h6>
@@ -30,6 +34,10 @@
             
             <a href="{{ route('schedules.index') }}" class="nav-link {{ request()->routeIs('schedules.*') ? 'active' : '' }}">
                 <i class="bi bi-clock-history"></i> Horários
+            </a>
+            
+            <a href="{{ route('admin.students.index') }}" class="nav-link {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
+                <i class="bi bi-person-badge"></i> Alunos
             </a>
             
             <a href="{{ route('settings.index') }}" class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">

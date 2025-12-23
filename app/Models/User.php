@@ -77,4 +77,31 @@ class User extends Authenticatable
     {
         return $this->hasMany(AuditLog::class);
     }
+
+    // Relacionamentos para Treinos
+    public function workoutsAsStudent()
+    {
+        return $this->hasMany(Workout::class, 'student_id');
+    }
+
+    public function workoutsAsInstructor()
+    {
+        return $this->hasMany(Workout::class, 'instructor_id');
+    }
+
+    public function workoutExecutions()
+    {
+        return $this->hasMany(WorkoutExecution::class);
+    }
+
+    // Relacionamentos para Bioimpedância
+    public function bioimpedanceMeasurements()
+    {
+        return $this->hasMany(BioimpedanceMeasurement::class)->orderBy('measurement_date', 'desc');
+    }
+
+    public function latestBioimpedance()
+    {
+        return $this->hasOne(BioimpedanceMeasurement::class)->latestOfMany('measurement_date');
+    }
 }

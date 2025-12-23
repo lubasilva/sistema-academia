@@ -16,48 +16,160 @@
         height: 3em;
     }
     
-    /* Indicadores de ocupação */
+    /* Indicadores de ocupação melhorados */
     .occupation-indicator {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        padding: 2px;
-        background: rgba(108, 117, 125, 0.1);
-        border-radius: 4px;
-        font-size: 0.7rem;
-    }
-    
-    .occupation-dots {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2px;
         justify-content: center;
-        margin-bottom: 2px;
+        padding: 8px;
+        background: rgba(13, 110, 253, 0.1);
+        border-radius: 6px;
+        border: 1px solid rgba(13, 110, 253, 0.2);
+        cursor: help;
+        transition: all 0.2s ease;
+        height: 100%;
     }
     
-    .occupation-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #6c757d;
-        display: inline-block;
-    }
-    
-    .occupation-count {
-        font-size: 0.65rem;
-        font-weight: bold;
-        color: #495057;
+    .occupation-indicator:hover {
+        background: rgba(13, 110, 253, 0.15);
+        border-color: rgba(13, 110, 253, 0.3);
+        transform: scale(1.02);
     }
     
     .occupation-text {
-        font-size: 0.65rem;
-        color: #6c757d;
+        font-size: 0.85rem;
+        color: #0d6efd;
         font-weight: 600;
+    }
+    
+    .occupation-high {
+        background: rgba(220, 53, 69, 0.1);
+        border-color: rgba(220, 53, 69, 0.2);
+    }
+    
+    .occupation-high .occupation-text {
+        color: #dc3545;
+    }
+    
+    .occupation-full {
+        background: rgba(108, 117, 125, 0.1);
+        border-color: rgba(108, 117, 125, 0.2);
+    }
+    
+    .occupation-full .occupation-text {
+        color: #6c757d;
+    }
+    
+    /* Tooltip customizado */
+    .custom-tooltip {
+        position: absolute;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        min-width: 200px;
+        max-width: 300px;
+        font-size: 0.85rem;
+        display: none;
+    }
+    
+    .tooltip-header {
+        font-weight: 600;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eee;
+        color: #495057;
+    }
+    
+    .tooltip-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .tooltip-list li {
+        padding: 4px 0;
+        color: #6c757d;
+    }
+    
+    .tooltip-list li i {
+        color: #0d6efd;
+        margin-right: 6px;
+    }
+    
+    /* Autocomplete de alunos */
+    .student-suggestions {
+        position: absolute;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        width: 100%;
+        margin-top: 2px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        display: none;
+    }
+    
+    .student-suggestions.show {
+        display: block;
+    }
+    
+    .student-suggestion-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.2s;
+    }
+    
+    .student-suggestion-item:hover {
+        background: #f8f9fa;
+    }
+    
+    .student-suggestion-item:last-child {
+        border-bottom: none;
+    }
+    
+    .student-name {
+        font-weight: 500;
+        color: #212529;
+        display: block;
+    }
+    
+    .student-details {
+        font-size: 0.85rem;
+        color: #6c757d;
+        display: block;
+        margin-top: 2px;
+    }
+    
+    .student-credits {
+        color: #0d6efd;
+        font-weight: 500;
+    }
+    
+    .no-students-found {
+        padding: 15px;
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
     }
     
     .booking-event {
         padding: 2px 4px;
         font-size: 0.75rem;
+    }
+    
+    /* Bookings do próprio usuário */
+    .my-booking {
+        border: 2px solid #198754 !important;
+        background: #198754 !important;
+        color: white !important;
+        font-weight: 600;
+        z-index: 10 !important;
     }
     
     /* Background events de ocupação */
@@ -119,18 +231,21 @@
                     <h6 class="fw-semibold mb-0">Legenda</h6>
                 </div>
                 <div class="card-body">
-                    <div class="mb-2">
-                        <span class="badge bg-success me-2">&nbsp;&nbsp;&nbsp;</span> Reservado
+                    <div class="mb-3">
+                        <strong class="d-block mb-2">Nível de Ocupação:</strong>
+                        <div class="mb-2">
+                            <span class="badge bg-primary me-2">&nbsp;&nbsp;&nbsp;</span> Normal (até 69%)
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge bg-warning me-2">&nbsp;&nbsp;&nbsp;</span> Alta (70-89%)
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge bg-secondary me-2">&nbsp;&nbsp;&nbsp;</span> Lotado (90% ou mais)
+                        </div>
                     </div>
-                    <div class="mb-2">
-                        <span class="badge bg-info me-2">&nbsp;&nbsp;&nbsp;</span> Realizado
-                    </div>
-                    <div class="mb-2">
-                        <span class="badge bg-danger me-2">&nbsp;&nbsp;&nbsp;</span> Cancelado
-                    </div>
-                    <div class="mb-2">
-                        <span class="badge bg-secondary me-2">&nbsp;&nbsp;&nbsp;</span> Ausente
-                    </div>
+                    <small class="text-muted d-block mt-2">
+                        <i class="bi bi-info-circle"></i> Passe o mouse sobre os horários para ver a lista de alunos agendados
+                    </small>
                 </div>
             </div>
 
@@ -170,20 +285,25 @@
                         <input type="date" class="form-control" id="booking_date" name="date" required min="{{ date('Y-m-d') }}">
                     </div>
                     <div class="mb-3">
-                        <label for="schedule_id" class="form-label">Horário</label>
-                        <select class="form-select" id="schedule_id" name="schedule_id" required>
+                        <label for="booking_time" class="form-label">Horário</label>
+                        <select class="form-select" id="booking_time" name="time" required>
                             <option value="">Selecione uma data primeiro</option>
                         </select>
+                        <small class="text-muted">Horários disponíveis conforme configuração da academia</small>
                     </div>
                     @if(auth()->user()->role === 'admin')
                     <div class="mb-3">
-                        <label for="user_id" class="form-label">Aluno</label>
-                        <select class="form-select" id="user_id" name="user_id" required>
-                            <option value="">Selecione o aluno</option>
-                            @foreach(\App\Models\User::where('role', 'student')->get() as $student)
-                            <option value="{{ $student->id }}">{{ $student->name }}</option>
-                            @endforeach
-                        </select>
+                        <label for="student_search" class="form-label">Aluno (somente com créditos disponíveis)</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="student_search" 
+                               placeholder="Clique para ver todos ou digite para buscar..."
+                               autocomplete="off">
+                        <input type="hidden" id="user_id" name="user_id" required>
+                        <div id="student_suggestions" class="student-suggestions"></div>
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle"></i> Clique no campo para ver todos os alunos com créditos ou digite para buscar
+                        </small>
                     </div>
                     @endif
                 </div>
@@ -209,6 +329,36 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof FullCalendar === 'undefined') {
         console.error('FullCalendar não foi carregado!');
         return;
+    }
+    
+    // Criar tooltip customizado
+    const tooltip = document.createElement('div');
+    tooltip.className = 'custom-tooltip';
+    document.body.appendChild(tooltip);
+    
+    // Função para mostrar tooltip
+    function showTooltip(event, students, count, capacity) {
+        if (!students || students.length === 0) return;
+        
+        let html = `<div class="tooltip-header">${count}/${capacity} vagas ocupadas</div>`;
+        html += '<ul class="tooltip-list">';
+        students.forEach(student => {
+            html += `<li><i class="bi bi-person-fill"></i>${student}</li>`;
+        });
+        html += '</ul>';
+        
+        tooltip.innerHTML = html;
+        tooltip.style.display = 'block';
+        
+        // Posicionar tooltip
+        const rect = event.target.getBoundingClientRect();
+        tooltip.style.left = (rect.left + window.scrollX) + 'px';
+        tooltip.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+    }
+    
+    // Função para esconder tooltip
+    function hideTooltip() {
+        tooltip.style.display = 'none';
     }
     
     // Função para abrir modal
@@ -240,8 +390,8 @@ document.addEventListener('DOMContentLoaded', function() {
         eventDisplay: 'block',
         displayEventTime: false,
         events: function(info, successCallback, failureCallback) {
-            // Buscar bookings do usuário
-            fetch('/api/bookings', {
+            // Buscar APENAS ocupação (sem bookings individuais)
+            fetch(`/api/schedules/occupation?start=${info.startStr}&end=${info.endStr}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'
@@ -249,68 +399,54 @@ document.addEventListener('DOMContentLoaded', function() {
                 credentials: 'same-origin'
             })
             .then(response => response.json())
-            .then(bookings => {
-                // Buscar ocupação de todos os horários
-                fetch(`/api/schedules/occupation?start=${info.startStr}&end=${info.endStr}`, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    },
-                    credentials: 'same-origin'
-                })
-                .then(response => response.json())
-                .then(occupation => {
-                    // Combinar bookings com eventos de ocupação
-                    const allEvents = [...bookings, ...occupation];
-                    successCallback(allEvents);
-                })
-                .catch(() => {
-                    successCallback(bookings);
-                });
+            .then(occupation => {
+                console.log('Ocupação carregada:', occupation.length, 'eventos');
+                successCallback(occupation);
             })
             .catch(failureCallback);
         },
         eventContent: function(arg) {
-            // Se for evento de ocupação (background)
-            if (arg.event.extendedProps.isOccupation) {
-                const count = arg.event.extendedProps.count;
-                const capacity = arg.event.extendedProps.capacity;
-                
-                // Criar indicadores visuais (bolinhas)
-                let dots = '';
-                for (let i = 0; i < Math.min(count, 10); i++) {
-                    dots += '<span class="occupation-dot"></span>';
-                }
-                
-                if (count > 10) {
-                    dots += `<span class="occupation-count">+${count - 10}</span>`;
-                }
-                
-                return {
-                    html: `<div class="occupation-indicator">
-                        <div class="occupation-dots">${dots}</div>
-                        <small class="occupation-text">${count}/${capacity}</small>
-                    </div>`
-                };
+            // Mostrar APENAS ocupação (todos os eventos são de ocupação agora)
+            const count = arg.event.extendedProps.count;
+            const capacity = arg.event.extendedProps.capacity;
+            const percentage = (count / capacity) * 100;
+            
+            // Definir classe baseada na ocupação
+            let occupationClass = '';
+            if (percentage >= 90) {
+                occupationClass = 'occupation-full';
+            } else if (percentage >= 70) {
+                occupationClass = 'occupation-high';
             }
             
-            // Eventos normais (bookings do usuário)
             return {
-                html: `<div class="booking-event">
-                    <strong>${arg.event.title}</strong>
+                html: `<div class="occupation-indicator ${occupationClass}" 
+                            data-students='${JSON.stringify(arg.event.extendedProps.students || [])}' 
+                            data-count="${count}" 
+                            data-capacity="${capacity}">
+                    <span class="occupation-text">${count}/${capacity}</span>
                 </div>`
             };
         },
+        eventDidMount: function(info) {
+            // Adicionar event listeners para tooltip em TODOS os eventos (todos são ocupação)
+            const el = info.el.querySelector('.occupation-indicator');
+            if (el) {
+                el.addEventListener('mouseenter', function(e) {
+                    const students = JSON.parse(this.getAttribute('data-students') || '[]');
+                    const count = this.getAttribute('data-count');
+                    const capacity = this.getAttribute('data-capacity');
+                    showTooltip(e, students, count, capacity);
+                });
+                
+                el.addEventListener('mouseleave', function() {
+                    hideTooltip();
+                });
+            }
+        },
         eventClick: function(info) {
-            // Não permitir clicar em eventos de ocupação
-            if (info.event.extendedProps.isOccupation) {
-                return;
-            }
-            
-            if (confirm('Deseja cancelar esta reserva?')) {
-                // TODO: implementar cancelamento
-                alert('Reserva: ' + info.event.title);
-            }
+            // Não fazer nada ao clicar (são apenas indicadores de ocupação)
+            return false;
         },
         select: function(info) {
             // Quando clicar e arrastar em um horário vazio
@@ -344,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Função para carregar horários disponíveis
     function loadSchedules(date, preSelectTime = null) {
-        const scheduleSelect = document.getElementById('schedule_id');
+        const scheduleSelect = document.getElementById('booking_time');
         scheduleSelect.innerHTML = '<option value="">Carregando...</option>';
         
         fetch(`/api/schedules/available?date=${date}`, {
@@ -361,18 +497,22 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            console.log('Horários carregados:', data);
+            console.log('Horários disponíveis:', data);
             scheduleSelect.innerHTML = '<option value="">Selecione o horário</option>';
             
             if (data.length === 0) {
-                scheduleSelect.innerHTML = '<option value="">Nenhum horário disponível</option>';
+                scheduleSelect.innerHTML = '<option value="">Nenhum horário disponível neste dia</option>';
                 return;
             }
             
             data.forEach(schedule => {
                 const option = document.createElement('option');
-                option.value = schedule.id;
-                option.textContent = `${schedule.time} (${schedule.available_slots} vagas disponíveis)`;
+                option.value = schedule.time;
+                
+                const occupied = schedule.capacity - schedule.available_slots;
+                const statusText = schedule.available_slots === 0 ? 'LOTADO' : `${schedule.available_slots} vaga(s)`;
+                
+                option.textContent = `${schedule.time} - ${occupied}/${schedule.capacity} (${statusText})`;
                 option.disabled = schedule.available_slots === 0;
                 
                 // Pré-selecionar o horário clicado
@@ -408,6 +548,131 @@ document.addEventListener('DOMContentLoaded', function() {
                 calendar.refetchEvents();
             }, 1000);
         });
+    }
+    
+    // Autocomplete de alunos (apenas para admin)
+    const studentSearchInput = document.getElementById('student_search');
+    const studentSuggestions = document.getElementById('student_suggestions');
+    const userIdInput = document.getElementById('user_id');
+    
+    if (studentSearchInput && studentSuggestions && userIdInput) {
+        let searchTimeout;
+        let currentStudents = [];
+        
+        // Função para buscar alunos
+        function fetchStudents(search = '') {
+            fetch(`/api/students/with-credits?search=${encodeURIComponent(search)}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(students => {
+                currentStudents = students;
+                displayStudentSuggestions(students);
+            })
+            .catch(error => {
+                console.error('Erro ao buscar alunos:', error);
+                studentSuggestions.innerHTML = '<div class="no-students-found">Erro ao buscar alunos</div>';
+                studentSuggestions.classList.add('show');
+            });
+        }
+        
+        // Mostrar todos os alunos com créditos ao clicar no campo
+        studentSearchInput.addEventListener('focus', function() {
+            if (!userIdInput.value && this.value.trim().length === 0) {
+                // Se não tem nada selecionado e campo vazio, mostrar todos
+                fetchStudents('');
+            } else if (currentStudents.length > 0) {
+                // Se já tem dados em cache, mostrar
+                displayStudentSuggestions(currentStudents);
+            }
+        });
+        
+        // Buscar alunos ao digitar
+        studentSearchInput.addEventListener('input', function() {
+            const search = this.value.trim();
+            
+            // Limpar timeout anterior
+            clearTimeout(searchTimeout);
+            
+            // Limpar seleção
+            userIdInput.value = '';
+            
+            if (search.length === 0) {
+                // Se apagou tudo, mostrar todos novamente
+                fetchStudents('');
+                return;
+            }
+            
+            if (search.length < 2) {
+                return;
+            }
+            
+            // Buscar após 300ms de inatividade
+            searchTimeout = setTimeout(() => {
+                fetchStudents(search);
+            }, 300);
+        });
+        
+        // Exibir sugestões
+        function displayStudentSuggestions(students) {
+            if (students.length === 0) {
+                studentSuggestions.innerHTML = '<div class="no-students-found">Nenhum aluno encontrado com créditos disponíveis</div>';
+                studentSuggestions.classList.add('show');
+                return;
+            }
+            
+            let html = '';
+            students.forEach(student => {
+                html += `
+                    <div class="student-suggestion-item" data-id="${student.id}">
+                        <span class="student-name">${student.name}</span>
+                        <span class="student-details">
+                            ${student.email} • 
+                            <span class="student-credits">${student.credits_info}</span> • 
+                            ${student.plan_name}
+                        </span>
+                    </div>
+                `;
+            });
+            
+            studentSuggestions.innerHTML = html;
+            studentSuggestions.classList.add('show');
+            
+            // Adicionar event listeners nos itens
+            studentSuggestions.querySelectorAll('.student-suggestion-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const studentId = this.dataset.id;
+                    const student = currentStudents.find(s => s.id == studentId);
+                    
+                    if (student) {
+                        studentSearchInput.value = student.name;
+                        userIdInput.value = student.id;
+                        studentSuggestions.classList.remove('show');
+                    }
+                });
+            });
+        }
+        
+        // Fechar sugestões ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!studentSearchInput.contains(e.target) && !studentSuggestions.contains(e.target)) {
+                studentSuggestions.classList.remove('show');
+            }
+        });
+        
+        // Resetar ao abrir modal
+        const bookingModal = document.getElementById('bookingModal');
+        if (bookingModal) {
+            bookingModal.addEventListener('show.bs.modal', function() {
+                studentSearchInput.value = '';
+                userIdInput.value = '';
+                studentSuggestions.classList.remove('show');
+            });
+        }
     }
 });
 </script>

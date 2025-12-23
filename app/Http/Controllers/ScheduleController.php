@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Schedule;
+use App\Models\ScheduleBlock;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -10,8 +11,14 @@ class ScheduleController extends Controller
 {
     public function index()
     {
-        $schedules = Schedule::orderBy('starts_at', 'desc')->paginate(20);
-        return view('schedules.index', compact('schedules'));
+        // Buscar bloqueios ativos e futuros
+        $blocks = ScheduleBlock::where('date', '>=', now()->format('Y-m-d'))
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->with('creator')
+            ->paginate(20);
+            
+        return view('admin.schedules.index', compact('blocks'));
     }
 
     public function create()

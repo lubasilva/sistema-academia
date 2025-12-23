@@ -47,5 +47,53 @@
                 <a href="{{ route('register') }}" class="text-decoration-none">Registrar-se</a>
             </div>
         @endif
+        
+        {{-- Credenciais de Teste --}}
+        @if (config('app.env') !== 'production')
+            <div class="mt-4 p-3 bg-light border rounded">
+                <h6 class="text-muted mb-2 fw-semibold">
+                    <i class="bi bi-gear me-1"></i>
+                    Credenciais de Teste
+                </h6>
+                <div class="row g-2">
+                    <div class="col-12 col-md-6">
+                        <div class="border rounded p-2 bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted fw-semibold">Admin</small>
+                                    <div class="small text-break">admin@studiofit.com</div>
+                                    <div class="small text-muted">password</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="fillLogin('admin@studiofit.com', 'password')">
+                                    <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="border rounded p-2 bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted fw-semibold">Master</small>
+                                    <div class="small text-break">master@studiofit.com</div>
+                                    <div class="small text-muted">password</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="fillLogin('master@studiofit.com', 'password')">
+                                    <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+                function fillLogin(email, password) {
+                    document.getElementById('email').value = email;
+                    document.getElementById('password').value = password;
+                    document.getElementById('email').focus();
+                }
+            </script>
+        @endif
     </form>
 </x-guest-layout>

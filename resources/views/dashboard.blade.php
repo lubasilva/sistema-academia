@@ -124,13 +124,31 @@
                                     @foreach(\App\Models\Booking::with('user', 'schedule')->latest()->take(10)->get() as $booking)
                                     <tr>
                                         <td>{{ $booking->user->name }}</td>
-                                        <td>{{ $booking->schedule->starts_at->format('d/m/Y') }}</td>
-                                        <td>{{ $booking->schedule->starts_at->format('H:i') }}</td>
                                         <td>
-                                            @if($booking->status === 'confirmed')
+                                            @if($booking->date)
+                                                {{ $booking->date->format('d/m/Y') }}
+                                            @elseif($booking->schedule)
+                                                {{ $booking->schedule->starts_at->format('d/m/Y') }}
+                                            @else
+                                                --/--/----
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($booking->time)
+                                                {{ substr($booking->time, 0, 5) }}
+                                            @elseif($booking->schedule)
+                                                {{ $booking->schedule->starts_at->format('H:i') }}
+                                            @else
+                                                --:--
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($booking->status === 'confirmed' || $booking->status === 'booked')
                                                 <span class="badge bg-success">Confirmado</span>
                                             @elseif($booking->status === 'cancelled')
                                                 <span class="badge bg-danger">Cancelado</span>
+                                            @elseif($booking->status === 'attended')
+                                                <span class="badge bg-info">Realizado</span>
                                             @else
                                                 <span class="badge bg-warning">Pendente</span>
                                             @endif
@@ -367,8 +385,24 @@
                                 <tbody>
                                     @forelse($upcomingBookings ?? [] as $booking)
                                     <tr>
-                                        <td>{{ $booking->schedule->starts_at->format('d/m/Y') }}</td>
-                                        <td>{{ $booking->schedule->starts_at->format('H:i') }}</td>
+                                        <td>
+                                            @if($booking->date)
+                                                {{ $booking->date->format('d/m/Y') }}
+                                            @elseif($booking->schedule)
+                                                {{ $booking->schedule->starts_at->format('d/m/Y') }}
+                                            @else
+                                                --/--/----
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($booking->time)
+                                                {{ substr($booking->time, 0, 5) }}
+                                            @elseif($booking->schedule)
+                                                {{ $booking->schedule->starts_at->format('H:i') }}
+                                            @else
+                                                --:--
+                                            @endif
+                                        </td>
                                         <td><span class="badge bg-success">Confirmado</span></td>
                                         <td>
                                             <form action="{{ route('bookings.destroy', $booking) }}" method="POST" class="d-inline">
