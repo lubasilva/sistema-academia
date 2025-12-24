@@ -13,32 +13,44 @@ No painel de variáveis do seu app Laravel, adicione:
 
 ### ⚠️ IMPORTANTE: Configure as variáveis ANTES do MySQL estar conectado
 
-**Método 1: Referência Automática (Recomendado)**
-Primeiro adicione estas variáveis básicas:
+**Passo 1: Gerar APP_KEY**
+No terminal local, execute:
+```bash
+php artisan key:generate --show
+```
+Copie o resultado (começa com `base64:`)
+
+**Passo 2: Adicionar variáveis básicas**
+No Railway, adicione estas variáveis:
 ```env
 APP_NAME="StudioFit Academia"
 APP_ENV=production
-APP_KEY=base64:XXXXXX  # Gere com: php artisan key:generate --show
+APP_KEY=base64:COLE_AQUI_O_RESULTADO_DO_COMANDO_ACIMA
 APP_DEBUG=false
-APP_URL=https://sua-url.railway.app
+APP_URL=https://sistema-academia-production-08a9.up.railway.app
 
 SESSION_DRIVER=database
 CACHE_DRIVER=file
 QUEUE_CONNECTION=database
 MAIL_MAILER=log
+LOG_CHANNEL=errorlog
 ```
+
+**⚠️ NÃO CONFIGURE PORTA MANUALMENTE!**
+O Railway usa automaticamente a variável `$PORT`. Não adicione `PORT=8080` nas variáveis.
 
 Depois, no Railway:
 1. Vá em **"Settings"** do seu serviço Laravel
 2. Clique em **"Variables"** 
-3. Clique em **"Reference"** e selecione as variáveis do MySQL:
+3. Clique em **"+ New Variable"** > **"Add Reference"**
+4. Selecione o serviço **MySQL** e adicione as variáveis:
    - `MYSQL_HOST` → Adicione como `DB_HOST`
    - `MYSQL_PORT` → Adicione como `DB_PORT`
    - `MYSQL_DATABASE` → Adicione como `DB_DATABASE`
    - `MYSQL_USER` → Adicione como `DB_USERNAME`
    - `MYSQL_PASSWORD` → Adicione como `DB_PASSWORD`
 
-4. Adicione também:
+5. Adicione também manualmente:
 ```env
 DB_CONNECTION=mysql
 ```
@@ -117,6 +129,28 @@ php artisan db:seed --class=ExerciseSeeder
 ```
 
 ## 🔧 Troubleshooting
+
+### Erro 500 (Internal Server Error)
+**Causa comum:** APP_KEY não configurada ou porta errada
+
+**Solução:**
+1. Verifique se `APP_KEY` está nas variáveis de ambiente
+2. **REMOVA** qualquer variável `PORT` que você adicionou manualmente
+3. O Railway define `$PORT` automaticamente
+4. No terminal do Railway, execute:
+```bash
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+```
+5. Restart o serviço
+
+### Logs não aparecem
+**Solução:** Adicione a variável de ambiente:
+```env
+LOG_CHANNEL=errorlog
+```
+Depois veja os logs em: Railway > Deployments > View Logs
 
 ### Erro de ENUM no SQLite
 Se ver erro relacionado a `MODIFY COLUMN` ou `ENUM`:
