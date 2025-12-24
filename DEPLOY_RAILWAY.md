@@ -1,10 +1,10 @@
 # Deploy no Railway - Sistema Academia
 
-## 1️⃣ Adicionar Banco de Dados
+## 1️⃣ Adicionar Banco de Dados PostgreSQL
 
 No dashboard do Railway:
 1. Clique em **"+ New"** dentro do seu projeto
-2. Selecione **"Database"** > **"Add MySQL"**
+2. Selecione **"Database"** > **"Add PostgreSQL"**
 3. Aguarde a criação (Railway gera automaticamente as credenciais)
 
 ## 2️⃣ Configurar Variáveis de Ambiente
@@ -39,13 +39,13 @@ LOG_CHANNEL=errorlog
 **⚠️ NÃO CONFIGURE PORTA MANUALMENTE!**
 O Railway usa automaticamente a variável `$PORT`. Não adicione `PORT=8080` nas variáveis.
 
-**Passo 3: Conectar ao MySQL (MÉTODO CORRETO)**
+**Passo 3: Conectar ao PostgreSQL (MÉTODO CORRETO - IGUAL TI5)**
 
-O Railway injeta automaticamente as credenciais do MySQL. Você só precisa de **1 variável**:
+O Railway injeta automaticamente as credenciais do PostgreSQL. Você só precisa de **1 variável**:
 
 No serviço **Laravel**, adicione:
 ```env
-DATABASE_URL=${{MySQL.MYSQL_URL}}
+DATABASE_URL=${{Postgres.DATABASE_URL}}
 ```
 
 **Como adicionar:**
@@ -53,8 +53,8 @@ DATABASE_URL=${{MySQL.MYSQL_URL}}
 2. Clique em **"+ New Variable"**
 3. Clique em **"Add Reference"** (não "Add Variable")
 4. No campo **"Variable Name"**, digite: `DATABASE_URL`
-5. No campo **"Reference"**, selecione o serviço **MySQL**
-6. Selecione a variável **MYSQL_URL**
+5. No campo **"Reference"**, selecione o serviço **Postgres**
+6. Selecione a variável **DATABASE_URL**
 7. Salve
 
 **⚠️ IMPORTANTE**: 
@@ -62,6 +62,7 @@ DATABASE_URL=${{MySQL.MYSQL_URL}}
 - A `DATABASE_URL` substitui todas elas automaticamente
 - O Laravel detecta a `DATABASE_URL` e configura tudo sozinho
 - Se você adicionou variáveis `DB_*` manualmente, **DELETE todas elas**
+- É o **mesmo método do TI5** - funciona perfeitamente!
 
 ## 3️⃣ Comandos de Deploy
 
