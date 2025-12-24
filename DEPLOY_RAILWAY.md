@@ -39,36 +39,33 @@ LOG_CHANNEL=errorlog
 **⚠️ NÃO CONFIGURE PORTA MANUALMENTE!**
 O Railway usa automaticamente a variável `$PORT`. Não adicione `PORT=8080` nas variáveis.
 
-Depois, no Railway:
-1. Vá em **"Settings"** do seu serviço Laravel
-2. Clique em **"Variables"** 
-3. Clique em **"+ New Variable"** > **"Add Reference"**
-4. Selecione o serviço **MySQL** e adicione as variáveis:
-   - `MYSQL_HOST` → Adicione como `DB_HOST`
-   - `MYSQL_PORT` → Adicione como `DB_PORT`
-   - `MYSQL_DATABASE` → Adicione como `DB_DATABASE`
-   - `MYSQL_USER` → Adicione como `DB_USERNAME`
-   - `MYSQL_PASSWORD` → Adicione como `DB_PASSWORD`
-
-5. Adicione também manualmente:
-```env
-DB_CONNECTION=mysql
-```
-
-**Método 2: Cópia Manual**
-Se o Método 1 não funcionar, copie as credenciais manualmente:
+**Método 1: Cópia Manual (RECOMENDADO)**
 1. Clique no serviço **MySQL** no Railway
-2. Vá em **"Connect"** ou **"Variables"**
-3. Copie os valores e cole nas variáveis do Laravel:
+2. Vá na aba **"Connect"**
+3. Copie o endereço do **"Private Networking"** (algo como `mysql.railway.internal` ou similar)
+4. No serviço **Laravel**, vá em **"Variables"** e adicione:
 
 ```env
 DB_CONNECTION=mysql
-DB_HOST=containers-us-west-xxx.railway.app
-DB_PORT=6379
+DB_HOST=mysql.railway.internal
+DB_PORT=3306
 DB_DATABASE=railway
 DB_USERNAME=root
-DB_PASSWORD=xxxxxxxxxxxxx
+DB_PASSWORD=COLE_AQUI_O_PASSWORD_DO_MYSQL
 ```
+
+**⚠️ IMPORTANTE**: 
+- **NÃO use aspas** nas variáveis
+- **NÃO use `${{}}`** - isso são referências internas do Railway
+- Cole os valores DIRETOS
+- Para o `DB_HOST`, use o **Private Domain** do MySQL (encontrado na aba "Connect")
+- Para o `DB_PASSWORD`, copie o valor da variável `MYSQL_ROOT_PASSWORD` do MySQL
+
+**Método 2: Usar Shared Variables (alternativo)**
+1. No projeto Railway (não no serviço), vá em **"Shared Variables"**
+2. Clique em **"New Shared Variable"**
+3. Crie variáveis compartilhadas apontando para o MySQL
+4. No serviço Laravel, referencie essas variáveis compartilhadas
 
 ## 3️⃣ Comandos de Deploy
 
