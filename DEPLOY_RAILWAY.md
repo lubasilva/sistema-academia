@@ -11,7 +11,10 @@ No dashboard do Railway:
 
 No painel de variáveis do seu app Laravel, adicione:
 
-### Essenciais
+### ⚠️ IMPORTANTE: Configure as variáveis ANTES do MySQL estar conectado
+
+**Método 1: Referência Automática (Recomendado)**
+Primeiro adicione estas variáveis básicas:
 ```env
 APP_NAME="StudioFit Academia"
 APP_ENV=production
@@ -19,26 +22,41 @@ APP_KEY=base64:XXXXXX  # Gere com: php artisan key:generate --show
 APP_DEBUG=false
 APP_URL=https://sua-url.railway.app
 
-# Banco de Dados (Railway preenche automaticamente se você usar o plugin MySQL)
-DB_CONNECTION=mysql
-DB_HOST=${{MySQL.MYSQL_HOST}}
-DB_PORT=${{MySQL.MYSQL_PORT}}
-DB_DATABASE=${{MySQL.MYSQL_DATABASE}}
-DB_USERNAME=${{MySQL.MYSQL_USER}}
-DB_PASSWORD=${{MySQL.MYSQL_PASSWORD}}
-
-# Session & Cache
 SESSION_DRIVER=database
 CACHE_DRIVER=file
 QUEUE_CONNECTION=database
-
-# Email (configure depois se necessário)
 MAIL_MAILER=log
 ```
 
-### Railway conecta automaticamente
-- Railway detecta as variáveis `${{MySQL.XXX}}` e as preenche automaticamente
-- Se preferir PostgreSQL, troque `MySQL` por `Postgres`
+Depois, no Railway:
+1. Vá em **"Settings"** do seu serviço Laravel
+2. Clique em **"Variables"** 
+3. Clique em **"Reference"** e selecione as variáveis do MySQL:
+   - `MYSQL_HOST` → Adicione como `DB_HOST`
+   - `MYSQL_PORT` → Adicione como `DB_PORT`
+   - `MYSQL_DATABASE` → Adicione como `DB_DATABASE`
+   - `MYSQL_USER` → Adicione como `DB_USERNAME`
+   - `MYSQL_PASSWORD` → Adicione como `DB_PASSWORD`
+
+4. Adicione também:
+```env
+DB_CONNECTION=mysql
+```
+
+**Método 2: Cópia Manual**
+Se o Método 1 não funcionar, copie as credenciais manualmente:
+1. Clique no serviço **MySQL** no Railway
+2. Vá em **"Connect"** ou **"Variables"**
+3. Copie os valores e cole nas variáveis do Laravel:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=containers-us-west-xxx.railway.app
+DB_PORT=6379
+DB_DATABASE=railway
+DB_USERNAME=root
+DB_PASSWORD=xxxxxxxxxxxxx
+```
 
 ## 3️⃣ Comandos de Deploy
 
@@ -46,13 +64,28 @@ O Railway executa automaticamente:
 ```bash
 composer install --no-dev --optimize-autoloader
 npm install && npm run build
-php artisan config:cache
-php artisan route:cache
-php artisan migrate --force
 php artisan serve --host=0.0.0.0 --port=$PORT
 ```
 
-## 4️⃣ Primeira vez após deploy
+### ⚠️ NÃO rode migrations no startCommand!
+As migrations devem ser executadas manualmente após o deploy, no terminal do Railway.
+
+## 4️⃣ Rodar Migrations pela primeira vez
+
+**DEPOIS** que o app estiver rodando (mesmo com erro de banco), acesse o Terminal no Railway e execute:
+
+```bash
+# Testar conexão
+php artisan migrate:status
+
+# Rodar migrations
+php artisan migrate --force
+
+# (Opcional) Rodar seeders
+php artisan db:seed --force
+```
+
+## 5️⃣ Criar Usuário Admin
 
 Após o primeiro deploy bem-sucedido, acesse o Terminal no Railway e execute:
 
@@ -76,7 +109,7 @@ Ou crie um seeder e execute:
 php artisan db:seed
 ```
 
-## 5️⃣ Executar Seeders
+## 6️⃣ Executar Seeders
 
 Se quiser popular exercícios e dados iniciais:
 ```bash
