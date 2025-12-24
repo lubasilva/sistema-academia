@@ -39,33 +39,29 @@ LOG_CHANNEL=errorlog
 **⚠️ NÃO CONFIGURE PORTA MANUALMENTE!**
 O Railway usa automaticamente a variável `$PORT`. Não adicione `PORT=8080` nas variáveis.
 
-**Método 1: Cópia Manual (RECOMENDADO)**
-1. Clique no serviço **MySQL** no Railway
-2. Vá na aba **"Connect"**
-3. Copie o endereço do **"Private Networking"** (algo como `mysql.railway.internal` ou similar)
-4. No serviço **Laravel**, vá em **"Variables"** e adicione:
+**Passo 3: Conectar ao MySQL (MÉTODO CORRETO)**
 
+O Railway injeta automaticamente as credenciais do MySQL. Você só precisa de **1 variável**:
+
+No serviço **Laravel**, adicione:
 ```env
-DB_CONNECTION=mysql
-DB_HOST=mysql.railway.internal
-DB_PORT=3306
-DB_DATABASE=railway
-DB_USERNAME=root
-DB_PASSWORD=COLE_AQUI_O_PASSWORD_DO_MYSQL
+DATABASE_URL=${{MySQL.MYSQL_URL}}
 ```
 
-**⚠️ IMPORTANTE**: 
-- **NÃO use aspas** nas variáveis
-- **NÃO use `${{}}`** - isso são referências internas do Railway
-- Cole os valores DIRETOS
-- Para o `DB_HOST`, use o **Private Domain** do MySQL (encontrado na aba "Connect")
-- Para o `DB_PASSWORD`, copie o valor da variável `MYSQL_ROOT_PASSWORD` do MySQL
+**Como adicionar:**
+1. No serviço **Laravel**, vá em **"Variables"**
+2. Clique em **"+ New Variable"**
+3. Clique em **"Add Reference"** (não "Add Variable")
+4. No campo **"Variable Name"**, digite: `DATABASE_URL`
+5. No campo **"Reference"**, selecione o serviço **MySQL**
+6. Selecione a variável **MYSQL_URL**
+7. Salve
 
-**Método 2: Usar Shared Variables (alternativo)**
-1. No projeto Railway (não no serviço), vá em **"Shared Variables"**
-2. Clique em **"New Shared Variable"**
-3. Crie variáveis compartilhadas apontando para o MySQL
-4. No serviço Laravel, referencie essas variáveis compartilhadas
+**⚠️ IMPORTANTE**: 
+- **NÃO adicione** variáveis `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
+- A `DATABASE_URL` substitui todas elas automaticamente
+- O Laravel detecta a `DATABASE_URL` e configura tudo sozinho
+- Se você adicionou variáveis `DB_*` manualmente, **DELETE todas elas**
 
 ## 3️⃣ Comandos de Deploy
 
