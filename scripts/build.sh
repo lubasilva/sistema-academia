@@ -24,4 +24,30 @@ php artisan config:clear
 php artisan cache:clear
 php artisan view:clear
 
+echo "⏳ Aguardando banco de dados (se necessário) para rodar migrations..."
+MAX_RETRIES=30
+SLEEP=5
+i=0
+while ! php artisan migrate:status > /dev/null 2>&1; do
+  if [ "$i" -ge "$MAX_RETRIES" ]; then
+    echo "⚠️ Banco não ficou disponível após $((MAX_RETRIES*SLEEP))s. Pulando migrations automáticas."
+    break
+  fi
+  echo "Aguardando DB... ($i/$MAX_RETRIES)"
+  i=$((i+1))
+  sleep $SLEEP
+done
+
+if php artisan migrate:status > /dev/null 2>&1; then
+  echo "📊 Rodando migrations..."
+  # Gera migration de sessions caso não exista
+  php artisan session:table || true
+  php artisan migrate --force
+
+  echo "👤 Seed inicial (Admin) - opcional"
+  php artisan db:seed --class=AdminUserSeeder --force || true
+else
+  echo "⚠️ Migrations não foram executadas. Rode-as manualmente quando o DB estiver disponível."
+fi
+
 echo "✅ Build concluído com sucesso"
