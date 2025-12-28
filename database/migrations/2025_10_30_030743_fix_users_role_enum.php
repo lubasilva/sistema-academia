@@ -16,8 +16,9 @@ return new class extends Migration
         DB::table('users')->where('role', 'aluno')->update(['role' => 'student']);
         DB::table('users')->where('role', 'instrutor')->update(['role' => 'instructor']);
         
-        // Depois altera o ENUM
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('admin', 'instructor', 'student') DEFAULT 'student'");
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('role')->default('student')->change();
+        });
     }
 
     /**
@@ -25,6 +26,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('admin', 'instrutor', 'aluno') DEFAULT 'aluno'");
+        // Reverte os valores primeiro
+        DB::table('users')->where('role', 'student')->update(['role' => 'aluno']);
+        DB::table('users')->where('role', 'instructor')->update(['role' => 'instrutor']);
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('role')->default('aluno')->change();
+        });
     }
 };
