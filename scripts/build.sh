@@ -4,7 +4,7 @@ set -e
 echo "🚀 Iniciando build do Sistema Academia..."
 
 echo "📦 Instalando dependências PHP (composer)..."
-composer install --no-dev --optimize-autoloader
+COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
 
 echo "🎨 Instalando dependências Node e buildando assets..."
 npm install
