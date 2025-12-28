@@ -21,9 +21,8 @@ fi
 echo "🔗 Criando link do storage (se já existir, ignora)..."
 php artisan storage:link || true
 
-echo "⚡ Limpando caches..."
+echo "⚡ Limpando caches de configuração e view..."
 php artisan config:clear
-php artisan cache:clear
 php artisan view:clear
 
 echo "⏳ Aguardando banco de dados (se necessário) para rodar migrations..."
@@ -45,6 +44,9 @@ if php artisan migrate:status > /dev/null 2>&1; then
   # Gera migration de sessions caso não exista
   php artisan session:table || true
   php artisan migrate --force
+
+  echo "⚡ Limpando cache de banco de dados..."
+  php artisan cache:clear
 
   echo "👤 Seed inicial (Admin) - opcional"
   php artisan db:seed --class=AdminUserSeeder --force || true
