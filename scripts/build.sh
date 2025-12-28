@@ -4,6 +4,8 @@ set -e
 echo "🚀 Iniciando build do Sistema Academia..."
 
 echo "📦 Instalando dependências PHP (composer)..."
+echo "🧹 Limpando diretório vendor para garantir um build limpo..."
+rm -rf vendor
 COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 echo "🎨 Instalando dependências Node e buildando assets..."
