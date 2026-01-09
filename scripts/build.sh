@@ -4,12 +4,10 @@ set -e
 echo "🚀 Iniciando build do Sistema Academia..."
 
 echo "📦 Instalando dependências PHP (composer)..."
-echo "🧹 Limpando diretório vendor para garantir um build limpo..."
-rm -rf vendor
-COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 
 echo "🎨 Instalando dependências Node e buildando assets..."
-npm install
+npm ci
 npm run build
 
 echo "🔑 Verificando APP_KEY..."
@@ -26,8 +24,8 @@ php artisan config:clear
 php artisan view:clear
 
 echo "⏳ Aguardando banco de dados (se necessário) para rodar migrations..."
-MAX_RETRIES=30
-SLEEP=5
+MAX_RETRIES=10
+SLEEP=2
 i=0
 while ! php artisan migrate:status > /dev/null 2>&1; do
   if [ "$i" -ge "$MAX_RETRIES" ]; then
@@ -41,15 +39,10 @@ done
 
 if php artisan migrate:status > /dev/null 2>&1; then
   echo "📊 Rodando migrations..."
-  # Gera migration de sessions caso não exista
-  php artisan session:table || true
   php artisan migrate --force
 
   echo "⚡ Limpando cache de banco de dados..."
   php artisan cache:clear
-
-  echo "👤 Executando seeds iniciais..."
-  php artisan db:seed --force || true
 else
   echo "⚠️ Migrations não foram executadas. Rode-as manualmente quando o DB estiver disponível."
 fi
