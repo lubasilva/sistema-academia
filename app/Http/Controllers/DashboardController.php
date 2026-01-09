@@ -26,70 +26,95 @@ class DashboardController extends Controller
 
     protected function adminDashboard()
     {
-        // Estatísticas gerais
-        $stats = [
-            'total_students' => User::where('role', 'aluno')->count(),
-            'total_instructors' => User::where('role', 'instrutor')->count(),
-            'bookings_today' => Booking::join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
-                ->whereDate('schedules.starts_at', today())
-                ->count(),
-            'revenue_month' => Payment::whereMonth('created_at', now()->month)
+        try {
+            // Estatísticas gerais
+            $stats = [
+                'total_students' => User::where('role', 'aluno')->count(),
+                'total_instructors' => User::where('role', 'instrutor')->count(),
+                'bookings_today' => Booking::join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
+                    ->whereDate('schedules.starts_at', today())
+                    ->count(),
+                'revenue_month' => Payment::whereMonth('created_at', now()->month)
+                    ->where('status', 'paid')
+                    ->sum('amount') ?? 0,
+            ];
+
+            // Reservas por dia (últimos 7 dias) - via schedules
+            $bookingsByDay = Booking::join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
+                ->select(
+                    DB::raw('DATE(schedules.starts_at) as date'),
+                    DB::raw('COUNT(*) as count')
+                )
+                ->where('schedules.starts_at', '>=', now()->subDays(7))
+                ->groupBy(DB::raw('DATE(schedules.starts_at)'))
+                ->orderBy('date')
+                ->get();
+
+            // Receita por mês (últimos 6 meses)
+            $revenueByMonth = Payment::select(
+                    DB::raw('EXTRACT(YEAR FROM created_at) as year'),
+                    DB::raw('EXTRACT(MONTH FROM created_at) as month'),
+                    DB::raw('SUM(amount) as total')
+                )
                 ->where('status', 'paid')
-                ->sum('amount'),
-        ];
+                ->where('created_at', '>=', now()->subMonths(6))
+                ->groupBy(DB::raw('EXTRACT(YEAR FROM created_at)'), DB::raw('EXTRACT(MONTH FROM created_at)'))
+                ->orderBy(DB::raw('EXTRACT(YEAR FROM created_at)'))
+                ->orderBy(DB::raw('EXTRACT(MONTH FROM created_at)'))
+                ->get();
 
-        // Reservas por dia (últimos 7 dias) - via schedules
-        $bookingsByDay = Booking::join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
-            ->select(
-                DB::raw('DATE(schedules.starts_at) as date'),
-                DB::raw('COUNT(*) as count')
-            )
-            ->where('schedules.starts_at', '>=', now()->subDays(7))
-            ->groupBy(DB::raw('DATE(schedules.starts_at)'))
-            ->orderBy('date')
-            ->get();
+            // Planos mais populares
+            $popularPlans = Payment::select('plan_id', DB::raw('COUNT(*) as count'))
+                ->where('status', 'paid')
+                ->whereNotNull('plan_id')
+                ->groupBy('plan_id')
+                ->with('plan')
+                ->orderByDesc('count')
+                ->take(5)
+                ->get();
 
-        // Receita por mês (últimos 6 meses)
-        $revenueByMonth = Payment::select(
-                DB::raw('YEAR(created_at) as year'),
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('SUM(amount) as total')
-            )
-            ->where('status', 'paid')
-            ->where('created_at', '>=', now()->subMonths(6))
-            ->groupBy('year', 'month')
-            ->orderBy('year')
-            ->orderBy('month')
-            ->get();
+            // Taxa de ocupação por horário
+            $occupancyRate = Booking::join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
+                ->select(
+                    'bookings.schedule_id',
+                    DB::raw('COUNT(*) as bookings')
+                )
+                ->where('schedules.starts_at', '>=', now()->startOfMonth())
+                ->whereNotIn('bookings.status', ['canceled'])
+                ->groupBy('bookings.schedule_id')
+                ->with('schedule')
+                ->get();
 
-        // Planos mais populares
-        $popularPlans = Payment::select('plan_id', DB::raw('COUNT(*) as count'))
-            ->where('status', 'paid')
-            ->groupBy('plan_id')
-            ->with('plan')
-            ->orderByDesc('count')
-            ->take(5)
-            ->get();
-
-        // Taxa de ocupação por horário
-        $occupancyRate = Booking::join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
-            ->select(
-                'bookings.schedule_id',
-                DB::raw('COUNT(*) as bookings')
-            )
-            ->where('schedules.starts_at', '>=', now()->startOfMonth())
-            ->whereNotIn('bookings.status', ['canceled'])
-            ->groupBy('bookings.schedule_id')
-            ->with('schedule')
-            ->get();
-
-        return view('dashboard', compact(
-            'stats',
-            'bookingsByDay',
-            'revenueByMonth',
-            'popularPlans',
-            'occupancyRate'
-        ));
+            return view('dashboard', compact(
+                'stats',
+                'bookingsByDay',
+                'revenueByMonth',
+                'popularPlans',
+                'occupancyRate'
+            ));
+        } catch (\Exception $e) {
+            \Log::error('Dashboard error: ' . $e->getMessage());
+            
+            // Retornar dashboard com dados vazios
+            $stats = [
+                'total_students' => 0,
+                'total_instructors' => 0,
+                'bookings_today' => 0,
+                'revenue_month' => 0,
+            ];
+            $bookingsByDay = collect([]);
+            $revenueByMonth = collect([]);
+            $popularPlans = collect([]);
+            $occupancyRate = collect([]);
+            
+            return view('dashboard', compact(
+                'stats',
+                'bookingsByDay',
+                'revenueByMonth',
+                'popularPlans',
+                'occupancyRate'
+            ));
+        }
     }
 
     protected function instructorDashboard()
