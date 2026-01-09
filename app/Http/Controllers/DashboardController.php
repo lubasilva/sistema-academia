@@ -17,7 +17,7 @@ class DashboardController extends Controller
 
         if ($user->role === 'admin') {
             return $this->adminDashboard();
-        } elseif ($user->role === 'instructor') {
+        } elseif ($user->role === 'instrutor') {
             return $this->instructorDashboard();
         } else {
             return $this->studentDashboard();
@@ -28,8 +28,8 @@ class DashboardController extends Controller
     {
         // Estatísticas gerais
         $stats = [
-            'total_students' => User::where('role', 'student')->count(),
-            'total_instructors' => User::where('role', 'instructor')->count(),
+            'total_students' => User::where('role', 'aluno')->count(),
+            'total_instructors' => User::where('role', 'instrutor')->count(),
             'bookings_today' => Booking::join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
                 ->whereDate('schedules.starts_at', today())
                 ->count(),

@@ -22,11 +22,11 @@ class UserSeeder extends Seeder
         );
 
         \App\Models\User::factory()->count(2)->create([
-            'role' => 'instructor',
+            'role' => 'instrutor',
         ]);
 
         \App\Models\User::factory()->count(40)->create([
-            'role' => 'student',
+            'role' => 'aluno',
         ]);
     }
 }

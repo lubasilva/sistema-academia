@@ -13,7 +13,7 @@ class BookingPolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'instructor', 'student']);
+        return in_array($user->role, ['admin', 'instrutor', 'aluno']);
     }
 
     /**
@@ -30,12 +30,12 @@ class BookingPolicy
     public function create(User $user): bool
     {
         // Admin e instrutor podem criar reservas para qualquer aluno
-        if (in_array($user->role, ['admin', 'instructor'])) {
+        if (in_array($user->role, ['admin', 'instrutor'])) {
             return true;
         }
         
         // Estudante só pode criar se tiver plano ativo
-        return $user->role === 'student' && $user->activePlan()->exists();
+        return $user->role === 'aluno' && $user->activePlan()->exists();
     }
 
     /**

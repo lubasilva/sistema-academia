@@ -38,7 +38,7 @@ class BookingController extends Controller
     {
         $query = Booking::with(['user', 'schedule']);
 
-        if (Auth::user()->role === 'student') {
+        if (Auth::user()->role === 'aluno') {
             $query->where('user_id', Auth::id());
         }
 

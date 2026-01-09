@@ -17,9 +17,9 @@ class ReportController extends Controller
         $startDate = now()->subDays($period);
         
         // Estatísticas Gerais
-        $totalUsers = User::where('role', 'student')->count();
-        $totalInstructors = User::where('role', 'instructor')->count();
-        $activeUsers = User::where('role', 'student')
+        $totalUsers = User::where('role', 'aluno')->count();
+        $totalInstructors = User::where('role', 'instrutor')->count();
+        $activeUsers = User::where('role', 'aluno')
             ->whereHas('bookings', function($q) use ($startDate) {
                 $q->where('created_at', '>=', $startDate);
             })->count();
@@ -52,7 +52,7 @@ class ReportController extends Controller
             ->get();
         
         // Top alunos (mais frequentes)
-        $topStudents = User::where('role', 'student')
+        $topStudents = User::where('role', 'aluno')
             ->withCount(['bookings' => function($q) use ($startDate) {
                 $q->where('status', 'attended')
                   ->where('created_at', '>=', $startDate);

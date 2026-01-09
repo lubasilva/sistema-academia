@@ -22,7 +22,7 @@ class StudentManagementController extends Controller
         $search = $request->get('search');
         $status = $request->get('status', 'all');
 
-        $students = User::where('role', 'student')
+        $students = User::where('role', 'aluno')
             ->with(['activePlan.plan', 'activePlan.creditLogs'])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {

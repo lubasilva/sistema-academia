@@ -29,7 +29,7 @@ class PaymentController extends Controller
 
         $query = Payment::with(['user', 'plan']);
 
-        if (auth()->user()->role === 'student') {
+        if (auth()->user()->role === 'aluno') {
             $query->where('user_id', auth()->id());
         }
 
