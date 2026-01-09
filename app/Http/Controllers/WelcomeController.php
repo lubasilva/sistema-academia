@@ -24,13 +24,14 @@ class WelcomeController extends Controller
         
         $schedules = Schedule::whereBetween('starts_at', [$startDate, $endDate])
             ->where('status', 'open')
+            ->withCount(['bookings' => function ($query) {
+                $query->whereIn('status', ['confirmed', 'attended']);
+            }])
             ->orderBy('starts_at')
             ->take(10)
             ->get()
             ->map(function ($schedule) {
-                $bookingsCount = Booking::where('schedule_id', $schedule->id)
-                    ->whereIn('status', ['confirmed', 'attended'])
-                    ->count();
+                $bookingsCount = $schedule->bookings_count;
                 
                 $maxCapacity = $schedule->capacity_override ?? 10; // Capacidade padrão
                 $schedule->available_spots = $maxCapacity - $bookingsCount;
