@@ -48,8 +48,8 @@ if php artisan migrate:status > /dev/null 2>&1; then
   echo "⚡ Limpando cache de banco de dados..."
   php artisan cache:clear
 
-  echo "👤 Seed inicial (Admin) - opcional"
-  php artisan db:seed --class=AdminUserSeeder --force || true
+  echo "👤 Executando seeds iniciais..."
+  php artisan db:seed --force || true
 else
   echo "⚠️ Migrations não foram executadas. Rode-as manualmente quando o DB estiver disponível."
 fi
