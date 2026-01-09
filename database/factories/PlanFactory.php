@@ -17,11 +17,11 @@ class PlanFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->randomElement(['Básico', 'Intermediário', 'Premium', 'VIP']),
-            'description' => fake()->sentence(),
-            'price' => fake()->randomFloat(2, 50, 500),
-            'credits' => fake()->numberBetween(4, 20),
-            'duration_days' => fake()->randomElement([30, 60, 90]),
+            'name' => $this->faker->randomElement(['Básico', 'Intermediário', 'Premium', 'VIP']),
+            'description' => $this->faker->sentence(),
+            'price' => $this->faker->randomFloat(2, 50, 500),
+            'credits' => $this->faker->numberBetween(4, 20),
+            'duration_days' => $this->faker->randomElement([30, 60, 90]),
             'is_active' => true,
             'is_featured' => false,
         ];

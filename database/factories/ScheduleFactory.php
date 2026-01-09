@@ -17,8 +17,8 @@ class ScheduleFactory extends Factory
     public function definition(): array
     {
         return [
-            'day_of_week' => fake()->numberBetween(0, 6),
-            'time' => fake()->time('H:i:00'),
+            'day_of_week' => $this->faker->numberBetween(0, 6),
+            'time' => $this->faker->time('H:i:00'),
             'is_active' => true,
         ];
     }
