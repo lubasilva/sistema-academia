@@ -2,5 +2,8 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "releaseCommand": "composer install --no-dev --optimize-autoloader --ignore-platform-reqs && php artisan key:generate --force 2>/dev/null || true && php artisan config:clear && php artisan view:clear && php artisan migrate --force 2>/dev/null || true && php artisan db:seed --force 2>/dev/null || true && php artisan storage:link 2>/dev/null || true"
   }
 }

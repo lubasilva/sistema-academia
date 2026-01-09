@@ -74,7 +74,8 @@
             "dont-discover": [
                 "laravel/pail",
                 "nunomaduro/collision",
-                "laravel/breeze"
+                "laravel/breeze",
+                "laravel/sail"
             ]
         }
     },
