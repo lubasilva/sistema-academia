@@ -1,9 +1,0 @@
-[build]
-# Don't install Node.js - we pre-compile assets
-nixpkgs = ["(php.withExtensions (pe: pe.enabled ++ []))", "nginx", "libmysqlclient", "phpPackages.composer"]
-
-[[install]]
-cmd = "mkdir -p /var/log/nginx && mkdir -p /var/cache/nginx"
-
-[[install]]
-cmd = "composer install --ignore-platform-reqs --no-dev --optimize-autoloader"
