@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
 
 class UserSeeder extends Seeder
 {
@@ -12,7 +13,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\User::firstOrCreate(
+        User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Admin',
@@ -21,12 +22,17 @@ class UserSeeder extends Seeder
             ]
         );
 
-        \App\Models\User::factory()->count(2)->create([
-            'role' => 'instrutor',
-        ]);
+        // Only seed instructors and students if they don't exist yet
+        if (User::where('role', 'instrutor')->count() === 0) {
+            User::factory()->count(2)->create([
+                'role' => 'instrutor',
+            ]);
+        }
 
-        \App\Models\User::factory()->count(40)->create([
-            'role' => 'aluno',
-        ]);
+        if (User::where('role', 'aluno')->count() === 0) {
+            User::factory()->count(40)->create([
+                'role' => 'aluno',
+            ]);
+        }
     }
 }
