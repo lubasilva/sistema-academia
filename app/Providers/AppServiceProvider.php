@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Laravel\Pail\PailServiceProvider;
+use NunoMaduro\Collision\Adapters\Laravel\CollisionServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,6 +15,7 @@ class AppServiceProvider extends ServiceProvider
     {
         if ($this->app->environment('local')) {
             $this->app->register(PailServiceProvider::class);
+            $this->app->register(CollisionServiceProvider::class);
         }
     }
 
