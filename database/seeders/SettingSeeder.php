@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Setting;
 
 class SettingSeeder extends Seeder
 {
@@ -19,7 +20,7 @@ class SettingSeeder extends Seeder
             ['key' => 'slot_minutes', 'value' => '60'],
         ];
         foreach ($settings as $setting) {
-            \App\Models\Setting::create($setting);
+            Setting::firstOrCreate(['key' => $setting['key']], $setting);
         }
     }
 }

@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Booking;
+use App\Models\Attendance;
 
 class AttendanceSeeder extends Seeder
 {
@@ -12,13 +14,20 @@ class AttendanceSeeder extends Seeder
      */
     public function run(): void
     {
-        $bookings = \App\Models\Booking::all();
+        // Only create attendances if none exist yet
+        if (Attendance::exists()) {
+            return;
+        }
+
+        $bookings = Booking::all();
         foreach ($bookings->take(10) as $booking) {
-            \App\Models\Attendance::create([
-                'booking_id' => $booking->id,
-                'present' => true,
-                'marked_by' => $booking->created_by,
-            ]);
+            Attendance::firstOrCreate(
+                ['booking_id' => $booking->id],
+                [
+                    'present' => true,
+                    'marked_by' => $booking->created_by,
+                ]
+            );
         }
     }
 }

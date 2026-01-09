@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Plan;
 
 class PlanSeeder extends Seeder
 {
@@ -47,7 +48,10 @@ class PlanSeeder extends Seeder
             ],
         ];
         foreach ($plans as $plan) {
-            \App\Models\Plan::create($plan);
+            Plan::firstOrCreate(['slug' => $plan['slug']], $plan);
+        }
+    }
+}
         }
     }
 }

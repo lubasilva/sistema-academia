@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Schedule;
+use App\Models\Booking;
 
 class BookingSeeder extends Seeder
 {
@@ -12,17 +15,27 @@ class BookingSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = \App\Models\User::where('role', 'aluno')->get();
-        $schedules = \App\Models\Schedule::where('status', 'open')->get();
+        // Only create bookings if none exist yet
+        if (Booking::exists()) {
+            return;
+        }
+
+        $users = User::where('role', 'aluno')->get();
+        $schedules = Schedule::where('status', 'open')->get();
+        
         foreach ($schedules->take(20) as $schedule) {
-            $alunos = $users->random(3);
+            $alunos = $users->random(min(3, $users->count()));
             foreach ($alunos as $aluno) {
-                \App\Models\Booking::create([
-                    'schedule_id' => $schedule->id,
-                    'user_id' => $aluno->id,
-                    'created_by' => $aluno->id,
-                    'status' => 'booked',
-                ]);
+                Booking::firstOrCreate(
+                    [
+                        'schedule_id' => $schedule->id,
+                        'user_id' => $aluno->id,
+                    ],
+                    [
+                        'created_by' => $aluno->id,
+                        'status' => 'booked',
+                    ]
+                );
             }
         }
     }
