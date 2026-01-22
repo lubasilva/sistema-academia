@@ -59,7 +59,7 @@
                         </div>
                         
                         <!-- Informações do Aluno (apenas para admin/master) -->
-                        @if(auth()->user()->role !== 'student')
+                        @if(auth()->user()->role !== 'aluno')
                             <div class="mb-2">
                                 <span class="badge bg-light text-dark border small">
                                     👤 {{ $workout->student->name }}

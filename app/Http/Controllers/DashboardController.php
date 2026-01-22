@@ -129,7 +129,7 @@ class DashboardController extends Controller
                     now()->endOfWeek()
                 ])
                 ->count(),
-            'total_students' => User::where('role', 'student')->count(),
+            'total_students' => User::where('role', 'aluno')->count(),
         ];
 
         $upcomingClasses = Booking::with(['user', 'schedule'])

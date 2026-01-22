@@ -133,7 +133,7 @@ class DemoDataSeeder extends Seeder
                 'password' => bcrypt('senha123'),
                 'phone' => $studentData['phone'],
                 'document' => $studentData['cpf'],
-                'role' => 'student',
+                'role' => 'aluno',
             ]);
 
             // Criar plano do usuário
@@ -167,7 +167,7 @@ class DemoDataSeeder extends Seeder
         $this->command->info("\nCriando reservas...");
         
         $schedules = Schedule::where('status', 'available')->get();
-        $createdStudents = User::where('role', 'student')->get();
+        $createdStudents = User::where('role', 'aluno')->get();
         
         if ($schedules->isNotEmpty()) {
             foreach ($createdStudents->take(5) as $student) {
@@ -255,7 +255,7 @@ class DemoDataSeeder extends Seeder
 
         $this->command->newLine();
         $this->command->info('💰 ESTATÍSTICAS:');
-        $this->command->info("   • Total de alunos: " . User::where('role', 'student')->count());
+        $this->command->info("   • Total de alunos: " . User::where('role', 'aluno')->count());
         $this->command->info("   • Planos ativos: " . UserPlan::where('status', 'active')->count());
         $this->command->info("   • Pagamentos confirmados: R$ " . number_format(Payment::where('status', 'paid')->sum('amount'), 2, ',', '.'));
         $this->command->info("   • Pagamentos pendentes: R$ " . number_format(Payment::where('status', 'pending')->sum('amount'), 2, ',', '.'));

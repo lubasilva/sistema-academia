@@ -249,7 +249,7 @@
                 </div>
             </div>
 
-            @if(auth()->user()->role === 'student' && auth()->user()->activePlan)
+            @if(auth()->user()->role === 'aluno' && auth()->user()->activePlan)
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white border-0 pt-3">
                     <h6 class="fw-semibold mb-0">Meu Plano</h6>

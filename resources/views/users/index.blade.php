@@ -44,7 +44,7 @@
                             <td>
                                 @if($user->role === 'admin')
                                     <span class="badge bg-danger">Admin</span>
-                                @elseif($user->role === 'instructor')
+                                @elseif($user->role === 'instrutor')
                                     <span class="badge bg-warning">Instrutor</span>
                                 @else
                                     <span class="badge bg-primary">Aluno</span>

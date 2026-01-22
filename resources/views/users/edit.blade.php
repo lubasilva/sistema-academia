@@ -37,8 +37,8 @@
                     <div class="col-md-6 mb-3">
                         <label for="role" class="form-label">Tipo de Usuário</label>
                         <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
-                            <option value="student" {{ old('role', $user->role) == 'student' ? 'selected' : '' }}>Aluno</option>
-                            <option value="instructor" {{ old('role', $user->role) == 'instructor' ? 'selected' : '' }}>Instrutor</option>
+                            <option value="aluno" {{ old('role', $user->role) == 'aluno' ? 'selected' : '' }}>Aluno</option>
+                            <option value="instrutor" {{ old('role', $user->role) == 'instrutor' ? 'selected' : '' }}>Instrutor</option>
                             <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
                         </select>
                         @error('role')

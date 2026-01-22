@@ -49,7 +49,7 @@
             </a>
             @endif
             
-            @if(auth()->user()->role === 'instructor')
+            @if(auth()->user()->role === 'instrutor')
             <hr class="bg-secondary">
             <h6 class="text-white-50 text-uppercase small px-3">Instrutor</h6>
             

@@ -41,9 +41,9 @@ class WelcomeController extends Controller
 
         // Estatísticas para mostrar
         $stats = [
-            'total_students' => User::where('role', 'student')->count(),
+            'total_students' => User::where('role', 'aluno')->count(),
             'total_classes' => Schedule::where('starts_at', '>=', Carbon::now())->count(),
-            'total_instructors' => User::where('role', 'instructor')->count(),
+            'total_instructors' => User::where('role', 'instrutor')->count(),
             'satisfaction_rate' => 98, // Pode ser calculado com um sistema de avaliações
         ];
 
