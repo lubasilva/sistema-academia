@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
         // Gerenciamento de alunos
         Route::get('admin/students', [\App\Http\Controllers\Admin\StudentManagementController::class, 'index'])->name('admin.students.index');
         Route::get('admin/students/{student}', [\App\Http\Controllers\Admin\StudentManagementController::class, 'show'])->name('admin.students.show');
+        Route::post('admin/students/{student}/assign-plan', [\App\Http\Controllers\Admin\StudentManagementController::class, 'assignPlan'])->name('admin.students.assign-plan');
         Route::post('admin/students/{student}/extra-credits', [\App\Http\Controllers\Admin\StudentManagementController::class, 'addExtraCredits'])->name('admin.students.add-extra-credits');
         Route::post('admin/students/{student}/observation', [\App\Http\Controllers\Admin\StudentManagementController::class, 'addObservation'])->name('admin.students.add-observation');
         Route::post('admin/students/{student}/bioimpedance', [\App\Http\Controllers\Admin\StudentManagementController::class, 'storeBioimpedance'])->name('admin.students.bioimpedance.store');
@@ -50,6 +51,7 @@ Route::middleware('auth')->group(function () {
         
         Route::get('settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
         Route::put('settings', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
+        Route::post('settings/operating-hours', [\App\Http\Controllers\SettingController::class, 'updateOperatingHours'])->name('settings.update-operating-hours');
         Route::get('reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
     });
     

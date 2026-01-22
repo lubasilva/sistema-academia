@@ -95,6 +95,17 @@
                     </div>
                     <div class="card-body">
                         <div class="btn-group-vertical d-grid gap-2 d-md-block" role="group">
+                            <!-- Ação para atribuir/alterar plano -->
+                            @if(!$student->activePlan)
+                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#assignPlanModal">
+                                    <i class="bi bi-clipboard-plus"></i> Atribuir Plano
+                                </button>
+                            @else
+                                <button class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#assignPlanModal">
+                                    <i class="bi bi-clipboard-check"></i> Alterar Plano
+                                </button>
+                            @endif
+                            
                             <!-- Ações principais -->
                             <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#workoutModal">
                                 <i class="bi bi-lightning-charge"></i> Gerenciar Treinos
@@ -307,6 +318,81 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Atribuir/Alterar Plano -->
+    <div class="modal fade" id="assignPlanModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('admin.students.assign-plan', $student) }}">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            @if($student->activePlan)
+                                Alterar Plano
+                            @else
+                                Atribuir Plano
+                            @endif
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if($student->activePlan)
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i> 
+                                O plano atual será cancelado e substituído pelo novo plano.
+                            </div>
+                        @endif
+                        
+                        <div class="mb-3">
+                            <label for="plan_id" class="form-label">Plano *</label>
+                            <select class="form-select @error('plan_id') is-invalid @enderror" 
+                                    id="plan_id" 
+                                    name="plan_id" 
+                                    required>
+                                <option value="">Selecione um plano...</option>
+                                @foreach(\App\Models\Plan::where('is_active', true)->get() as $plan)
+                                    <option value="{{ $plan->id }}" 
+                                            {{ old('plan_id') == $plan->id ? 'selected' : '' }}>
+                                        {{ $plan->name }} - R$ {{ number_format($plan->price, 2, ',', '.') }}/{{ $plan->billing_cycle_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('plan_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="starts_at" class="form-label">Data de Início *</label>
+                            <input type="date" 
+                                   class="form-control @error('starts_at') is-invalid @enderror" 
+                                   id="starts_at" 
+                                   name="starts_at" 
+                                   value="{{ old('starts_at', now()->format('Y-m-d')) }}"
+                                   required>
+                            @error('starts_at')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">
+                                A data de término será calculada automaticamente conforme o ciclo do plano.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-clipboard-check"></i> 
+                            @if($student->activePlan)
+                                Alterar Plano
+                            @else
+                                Atribuir Plano
+                            @endif
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -83,6 +83,60 @@ class StudentManagementController extends Controller
     }
 
     /**
+     * Atribuir plano ao aluno
+     */
+    public function assignPlan(Request $request, User $student)
+    {
+        $validated = $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+            'starts_at' => 'required|date',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            // Desativar planos ativos existentes
+            \App\Models\UserPlan::where('user_id', $student->id)
+                ->where('status', 'active')
+                ->update(['status' => 'cancelled']);
+
+            $plan = \App\Models\Plan::findOrFail($validated['plan_id']);
+            $startsAt = \Carbon\Carbon::parse($validated['starts_at']);
+            $endsAt = $startsAt->copy()->addDays($plan->duration_days);
+
+            // Criar novo plano
+            $userPlan = \App\Models\UserPlan::create([
+                'user_id' => $student->id,
+                'plan_id' => $plan->id,
+                'credits_remaining' => $plan->type === 'unlimited' ? 999 : $plan->credits,
+                'extra_credits' => 0,
+                'total_credits_used' => 0,
+                'status' => 'active',
+                'starts_at' => $startsAt,
+                'ends_at' => $endsAt,
+            ]);
+
+            // Criar log de créditos inicial
+            \App\Models\CreditLog::logAction(
+                userPlanId: $userPlan->id,
+                userId: $student->id,
+                createdBy: Auth::id(),
+                actionType: 'plan_assigned',
+                creditType: 'regular',
+                amount: $plan->type === 'unlimited' ? 999 : $plan->credits,
+                balanceAfter: $plan->type === 'unlimited' ? 999 : $plan->credits,
+                reason: "Plano {$plan->name} atribuído manualmente"
+            );
+
+            DB::commit();
+
+            return back()->with('success', "✅ Plano {$plan->name} atribuído com sucesso! Válido até " . $endsAt->format('d/m/Y'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Erro ao atribuir plano: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Adicionar créditos extras
      */
     public function addExtraCredits(Request $request, User $student)

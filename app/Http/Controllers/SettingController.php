@@ -35,4 +35,36 @@ class SettingController extends Controller
 
         return redirect()->route('settings.index')->with('success', 'Configurações atualizadas com sucesso!');
     }
+
+    /**
+     * Atualizar horários de funcionamento
+     */
+    public function updateOperatingHours(Request $request)
+    {
+        $validated = $request->validate([
+            'day' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            'enabled' => 'nullable|boolean',
+            'start' => 'required_if:enabled,1|nullable|date_format:H:i',
+            'end' => 'required_if:enabled,1|nullable|date_format:H:i|after:start',
+        ]);
+
+        // Buscar configuração existente
+        $setting = Setting::where('key', 'operating_hours')->first();
+        $operatingHours = $setting ? json_decode($setting->value, true) : [];
+
+        // Atualizar o dia específico
+        $operatingHours[$validated['day']] = [
+            'enabled' => isset($validated['enabled']) && $validated['enabled'],
+            'start' => $validated['start'] ?? '06:00',
+            'end' => $validated['end'] ?? '22:00',
+        ];
+
+        // Salvar
+        Setting::updateOrCreate(
+            ['key' => 'operating_hours'],
+            ['value' => json_encode($operatingHours)]
+        );
+
+        return back()->with('success', '✅ Horário de funcionamento atualizado com sucesso!');
+    }
 }

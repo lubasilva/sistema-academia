@@ -105,10 +105,15 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary" disabled>
+                                            <button class="btn btn-sm btn-outline-primary" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#editDayModal"
+                                                    data-day="{{ $key }}"
+                                                    data-enabled="{{ $dayConfig && $dayConfig['enabled'] ? 'true' : 'false' }}"
+                                                    data-start="{{ $dayConfig['start'] ?? '06:00' }}"
+                                                    data-end="{{ $dayConfig['end'] ?? '22:00' }}">
                                                 <i class="bi bi-pencil"></i> Editar
                                             </button>
-                                            <small class="text-muted ms-2">(Em breve)</small>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -280,4 +285,106 @@
         </div>
     </div>
 </div>
+
+<!-- Modal: Editar Dia da Semana -->
+<div class="modal fade" id="editDayModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ route('settings.update-operating-hours') }}">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Horário de Funcionamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit_day" name="day">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" id="day_label">Dia da Semana</label>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="edit_enabled" name="enabled" value="1">
+                            <label class="form-check-label" for="edit_enabled">
+                                Academia aberta neste dia
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="time_fields">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="edit_start" class="form-label">Horário de Abertura</label>
+                                    <input type="time" class="form-control" id="edit_start" name="start">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="edit_end" class="form-label">Horário de Fechamento</label>
+                                    <input type="time" class="form-control" id="edit_end" name="end">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editDayModal = document.getElementById('editDayModal');
+    const dayNames = {
+        'monday': 'Segunda-feira',
+        'tuesday': 'Terça-feira',
+        'wednesday': 'Quarta-feira',
+        'thursday': 'Quinta-feira',
+        'friday': 'Sexta-feira',
+        'saturday': 'Sábado',
+        'sunday': 'Domingo'
+    };
+    
+    editDayModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const day = button.getAttribute('data-day');
+        const enabled = button.getAttribute('data-enabled') === 'true';
+        const start = button.getAttribute('data-start');
+        const end = button.getAttribute('data-end');
+        
+        document.getElementById('edit_day').value = day;
+        document.getElementById('day_label').textContent = dayNames[day];
+        document.getElementById('edit_enabled').checked = enabled;
+        document.getElementById('edit_start').value = start;
+        document.getElementById('edit_end').value = end;
+        
+        toggleTimeFields();
+    });
+    
+    document.getElementById('edit_enabled').addEventListener('change', toggleTimeFields);
+    
+    function toggleTimeFields() {
+        const enabled = document.getElementById('edit_enabled').checked;
+        const timeFields = document.getElementById('time_fields');
+        timeFields.style.display = enabled ? 'block' : 'none';
+        
+        if (!enabled) {
+            document.getElementById('edit_start').removeAttribute('required');
+            document.getElementById('edit_end').removeAttribute('required');
+        } else {
+            document.getElementById('edit_start').setAttribute('required', 'required');
+            document.getElementById('edit_end').setAttribute('required', 'required');
+        }
+    }
+});
+</script>
+
 @endsection
