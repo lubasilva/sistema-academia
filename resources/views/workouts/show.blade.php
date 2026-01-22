@@ -62,6 +62,7 @@
                 </div>
                 <div class="card-body p-0">
                     @forelse($workout->exercises as $index => $workoutExercise)
+                        @if($workoutExercise->exercise)
                         <div class="p-3 border-bottom exercise-row" data-exercise-id="{{ $workoutExercise->id }}">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div class="flex-grow-1">

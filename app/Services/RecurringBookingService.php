@@ -48,13 +48,8 @@ class RecurringBookingService
         $usedCredits = $activePlan->total_credits_used ?? 0;
         $extraCredits = $activePlan->extra_credits ?? 0;
         
-        if ($plan->type === 'unlimited') {
-            // Para planos ilimitados, criar até a data de expiração
-            $availableCredits = 1000; // Número grande para não limitar
-        } else {
-            $remaining = $plan->credits - $usedCredits;
-            $availableCredits = $remaining + $extraCredits;
-        }
+        $remaining = $plan->credits - $usedCredits;
+        $availableCredits = $remaining + $extraCredits;
         
         if ($availableCredits <= 0) {
             return 0;

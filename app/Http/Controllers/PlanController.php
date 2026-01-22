@@ -28,17 +28,21 @@ class PlanController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        // Converter preço para centavos
-        $validated['price_cents'] = $validated['price'] * 100;
-        unset($validated['price']);
+        try {
+            // Converter preço para centavos
+            $validated['price_cents'] = $validated['price'] * 100;
+            unset($validated['price']);
 
-        // Gerar slug
-        $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']);
-        $validated['is_active'] = $request->has('is_active');
+            // Gerar slug
+            $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']);
+            $validated['is_active'] = $request->has('is_active');
 
-        Plan::create($validated);
+            Plan::create($validated);
 
-        return redirect()->route('plans.index')->with('success', 'Plano criado com sucesso!');
+            return redirect()->route('plans.index')->with('success', 'Plano criado com sucesso!');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Erro ao criar plano: ' . $e->getMessage());
+        }
     }
 
     public function show(Plan $plan)

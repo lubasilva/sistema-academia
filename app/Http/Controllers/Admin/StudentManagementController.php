@@ -10,6 +10,7 @@ use App\Models\BioimpedanceMeasurement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class StudentManagementController extends Controller
@@ -107,7 +108,7 @@ class StudentManagementController extends Controller
             $userPlan = \App\Models\UserPlan::create([
                 'user_id' => $student->id,
                 'plan_id' => $plan->id,
-                'credits_remaining' => $plan->type === 'unlimited' ? 999 : $plan->credits,
+                'credits_remaining' => $plan->credits,
                 'extra_credits' => 0,
                 'total_credits_used' => 0,
                 'status' => 'active',
@@ -122,8 +123,8 @@ class StudentManagementController extends Controller
                 createdBy: Auth::id(),
                 actionType: 'plan_assigned',
                 creditType: 'regular',
-                amount: $plan->type === 'unlimited' ? 999 : $plan->credits,
-                balanceAfter: $plan->type === 'unlimited' ? 999 : $plan->credits,
+                amount: $plan->credits,
+                balanceAfter: $plan->credits,
                 reason: "Plano {$plan->name} atribuído manualmente"
             );
 
@@ -296,7 +297,7 @@ class StudentManagementController extends Controller
      */
     public function storeBioimpedance(Request $request, User $student)
     {
-        $request->validate([
+        $validated = $request->validate([
             'weight' => 'required|numeric|min:0|max:500',
             'height' => 'nullable|numeric|min:0|max:300',
             'body_fat_percentage' => 'nullable|numeric|min:0|max:100',
@@ -314,34 +315,44 @@ class StudentManagementController extends Controller
             'notes' => 'nullable|string|max:1000'
         ]);
 
-        // Calcular BMI se altura foi fornecida
-        $bmi = null;
-        if ($request->height && $request->weight) {
-            $heightInMeters = $request->height / 100;
-            $bmi = round($request->weight / ($heightInMeters * $heightInMeters), 2);
+        try {
+            // Calcular BMI se altura foi fornecida
+            $bmi = null;
+            if ($validated['height'] ?? false && $validated['weight']) {
+                $heightInMeters = $validated['height'] / 100;
+                $bmi = round($validated['weight'] / ($heightInMeters * $heightInMeters), 2);
+            }
+
+            BioimpedanceMeasurement::create([
+                'user_id' => $student->id,
+                'measured_by' => Auth::id(),
+                'weight' => $validated['weight'],
+                'height' => $validated['height'] ?? null,
+                'bmi' => $bmi,
+                'body_fat_percentage' => $validated['body_fat_percentage'] ?? null,
+                'muscle_mass' => $validated['muscle_mass'] ?? null,
+                'water_percentage' => $validated['water_percentage'] ?? null,
+                'visceral_fat' => $validated['visceral_fat'] ?? null,
+                'basal_metabolic_rate' => $validated['basal_metabolic_rate'] ?? null,
+                'protein_percentage' => $validated['protein_percentage'] ?? null,
+                'chest' => $validated['chest'] ?? null,
+                'waist' => $validated['waist'] ?? null,
+                'hip' => $validated['hip'] ?? null,
+                'arm' => $validated['arm'] ?? null,
+                'thigh' => $validated['thigh'] ?? null,
+                'measurement_date' => $validated['measurement_date'],
+                'notes' => $validated['notes'] ?? null
+            ]);
+
+            return back()->with('success', 'Medição de bioimpedância registrada com sucesso!');
+        } catch (\Exception $e) {
+            Log::error('Erro ao salvar bioimpedância: ' . $e->getMessage(), [
+                'student_id' => $student->id,
+                'user_id' => Auth::id(),
+                'data' => $validated,
+            ]);
+            
+            return back()->with('error', 'Erro ao salvar bioimpedância: ' . $e->getMessage())->withInput();
         }
-
-        BioimpedanceMeasurement::create([
-            'user_id' => $student->id,
-            'measured_by' => Auth::id(),
-            'weight' => $request->weight,
-            'height' => $request->height,
-            'bmi' => $bmi,
-            'body_fat_percentage' => $request->body_fat_percentage,
-            'muscle_mass' => $request->muscle_mass,
-            'water_percentage' => $request->water_percentage,
-            'visceral_fat' => $request->visceral_fat,
-            'basal_metabolic_rate' => $request->basal_metabolic_rate,
-            'protein_percentage' => $request->protein_percentage,
-            'chest' => $request->chest,
-            'waist' => $request->waist,
-            'hip' => $request->hip,
-            'arm' => $request->arm,
-            'thigh' => $request->thigh,
-            'measurement_date' => $request->measurement_date,
-            'notes' => $request->notes
-        ]);
-
-        return back()->with('success', 'Medição de bioimpedância registrada com sucesso!');
     }
 }

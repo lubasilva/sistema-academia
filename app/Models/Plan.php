@@ -55,4 +55,21 @@ class Plan extends Model
             default => 30,
         };
     }
+
+    /**
+     * Calcula o número de créditos do plano baseado na frequência e ciclo
+     * Créditos = frequência semanal × número de semanas do ciclo
+     */
+    public function getCreditsAttribute(): int
+    {
+        $weeksInCycle = match($this->billing_cycle) {
+            'monthly' => 4,
+            'quarterly' => 12,
+            'semiannual' => 24,
+            'annual' => 52,
+            default => 4,
+        };
+        
+        return $this->frequency_per_week * $weeksInCycle;
+    }
 }

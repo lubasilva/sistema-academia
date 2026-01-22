@@ -80,29 +80,20 @@ Route::middleware('auth')->group(function () {
                     $usedCredits = $student->activePlan->total_credits_used ?? 0;
                     $extraCredits = $student->activePlan->extra_credits ?? 0;
                     
-                    if ($plan->type === 'unlimited') {
-                        // Plano ilimitado sempre tem créditos
-                        return $student->activePlan->ends_at >= now();
-                    } else {
-                        // Plano limitado: verificar créditos normais + extras
-                        $totalAvailable = ($plan->credits - $usedCredits) + $extraCredits;
-                        return $totalAvailable > 0 && $student->activePlan->ends_at >= now();
-                    }
+                    // Verificar créditos normais + extras
+                    $totalAvailable = ($plan->credits - $usedCredits) + $extraCredits;
+                    return $totalAvailable > 0 && $student->activePlan->ends_at >= now();
                 })
                 ->map(function($student) {
                     $plan = $student->activePlan->plan;
                     $usedCredits = $student->activePlan->total_credits_used ?? 0;
                     $extraCredits = $student->activePlan->extra_credits ?? 0;
                     
-                    if ($plan->type === 'unlimited') {
-                        $creditsInfo = 'Ilimitado';
-                    } else {
-                        $remaining = $plan->credits - $usedCredits;
-                        $total = $remaining + $extraCredits;
-                        $creditsInfo = "{$total} créditos";
-                        if ($extraCredits > 0) {
-                            $creditsInfo .= " ({$remaining} + {$extraCredits} extras)";
-                        }
+                    $remaining = $plan->credits - $usedCredits;
+                    $total = $remaining + $extraCredits;
+                    $creditsInfo = "{$total} créditos";
+                    if ($extraCredits > 0) {
+                        $creditsInfo .= " ({$remaining} + {$extraCredits} extras)";
                     }
                     
                     return [

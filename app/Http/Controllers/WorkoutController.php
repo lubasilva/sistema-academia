@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class WorkoutController extends Controller
@@ -203,14 +204,24 @@ class WorkoutController extends Controller
     {
         $this->authorize('view', $workout);
         
-        $workout->load([
-            'student', 
-            'instructor', 
-            'exercises.exercise', 
-            'exercises.executions'
-        ]);
-        
-        return view('workouts.show', compact('workout'));
+        try {
+            $workout->load([
+                'student', 
+                'instructor', 
+                'exercises.exercise', 
+                'exercises.executions'
+            ]);
+            
+            return view('workouts.show', compact('workout'));
+        } catch (\Exception $e) {
+            Log::error('Erro ao visualizar treino: ' . $e->getMessage(), [
+                'workout_id' => $workout->id,
+                'user_id' => Auth::id(),
+            ]);
+            
+            return redirect()->route('workouts.index')
+                ->with('error', 'Erro ao visualizar treino: ' . $e->getMessage());
+        }
     }
 
     public function edit(Workout $workout)

@@ -7,6 +7,7 @@ use App\Models\ScheduleBlock;
 use App\Services\ScheduleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ScheduleBlockController extends Controller
 {
@@ -54,18 +55,29 @@ class ScheduleBlockController extends Controller
             'notes' => 'nullable|string|max:500',
         ]);
 
-        $this->scheduleService->blockSlot(
-            $validated['date'],
-            $validated['start_time'],
-            $validated['end_time'],
-            $validated['reason'],
-            $validated['notes'] ?? null,
-            Auth::id()
-        );
+        try {
+            $this->scheduleService->blockSlot(
+                $validated['date'],
+                $validated['start_time'],
+                $validated['end_time'],
+                $validated['reason'],
+                $validated['notes'] ?? null,
+                Auth::id()
+            );
 
-        return redirect()
-            ->route('admin.schedule-blocks.index')
-            ->with('success', 'Horário bloqueado com sucesso!');
+            return redirect()
+                ->route('admin.schedule-blocks.index')
+                ->with('success', 'Horário bloqueado com sucesso!');
+        } catch (\Exception $e) {
+            Log::error('Erro ao criar bloqueio de horário: ' . $e->getMessage(), [
+                'data' => $validated,
+                'user_id' => Auth::id(),
+            ]);
+            
+            return back()
+                ->withInput()
+                ->with('error', 'Erro ao criar bloqueio: ' . $e->getMessage());
+        }
     }
 
     /**

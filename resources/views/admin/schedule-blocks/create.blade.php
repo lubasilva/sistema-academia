@@ -108,7 +108,7 @@
                         </div>
 
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary" id="blockSubmitBtn">
                                 <i class="bi bi-check-circle me-2"></i>Criar Bloqueio
                             </button>
                             <a href="{{ route('schedules.index') }}" class="btn btn-outline-secondary">
@@ -196,6 +196,22 @@ function quickBlock(type) {
         reason.value = 'holiday';
         alert('Selecione a data do feriado');
     }
+}
+
+// Proteção contra duplo clique
+const blockForm = document.querySelector('form');
+const blockSubmitBtn = document.getElementById('blockSubmitBtn');
+
+if (blockForm && blockSubmitBtn) {
+    blockForm.addEventListener('submit', function(e) {
+        if (blockSubmitBtn.disabled) {
+            e.preventDefault();
+            return false;
+        }
+        
+        blockSubmitBtn.disabled = true;
+        blockSubmitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Criando...';
+    });
 }
 </script>
 @endpush

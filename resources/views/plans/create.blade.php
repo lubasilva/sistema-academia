@@ -80,7 +80,7 @@
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
                         <i class="bi bi-check-circle"></i> Criar Plano
                     </button>
                     <a href="{{ route('plans.index') }}" class="btn btn-outline-secondary">
@@ -91,4 +91,22 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+// Proteção contra duplo clique
+const form = document.querySelector('form');
+const submitBtn = document.getElementById('submitBtn');
+
+form.addEventListener('submit', function(e) {
+    if (submitBtn.disabled) {
+        e.preventDefault();
+        return false;
+    }
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
+});
+</script>
+@endpush
 @endsection
