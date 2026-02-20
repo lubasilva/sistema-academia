@@ -23,15 +23,15 @@ class UserSeeder extends Seeder
         );
 
         // Only seed instructors and students if they don't exist yet
-        if (User::where('role', 'instrutor')->count() === 0) {
+        if (User::where('role', 'instructor')->count() === 0) {
             User::factory()->count(2)->create([
-                'role' => 'instrutor',
+                'role' => 'instructor',
             ]);
         }
 
-        if (User::where('role', 'aluno')->count() === 0) {
+        if (User::where('role', 'student')->count() === 0) {
             User::factory()->count(40)->create([
-                'role' => 'aluno',
+                'role' => 'student',
             ]);
         }
     }

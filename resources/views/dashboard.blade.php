@@ -265,7 +265,7 @@
         </script>
         @endpush
 
-    @elseif(auth()->user()->role === 'instrutor')
+    @elseif(auth()->user()->role === 'instructor')
         <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm">

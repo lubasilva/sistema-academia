@@ -63,7 +63,7 @@ Route::middleware('auth')->group(function () {
         try {
             $search = $request->get('search', '');
             
-            $students = \App\Models\User::where('role', 'aluno')
+            $students = \App\Models\User::where('role', 'student')
                 ->with(['activePlan.plan'])
                 ->when($search, function($query, $search) {
                     $query->where('name', 'like', "%{$search}%")

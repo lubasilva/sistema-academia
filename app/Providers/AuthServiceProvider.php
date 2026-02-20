@@ -37,11 +37,11 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('instructor-access', function (User $user) {
-            return in_array($user->role, ['admin', 'instrutor']);
+            return in_array($user->role, ['admin', 'instructor']);
         });
 
         Gate::define('student-access', function (User $user) {
-            return in_array($user->role, ['admin', 'aluno']);
+            return in_array($user->role, ['admin', 'student']);
         });
 
         // Gate para verificar plano ativo

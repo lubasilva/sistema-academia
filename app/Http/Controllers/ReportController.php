@@ -17,9 +17,9 @@ class ReportController extends Controller
         $startDate = now()->subDays($period);
         
         // Estatísticas Gerais
-        $totalUsers = User::where('role', 'aluno')->count();
-        $totalInstructors = User::where('role', 'instrutor')->count();
-        $activeUsers = User::where('role', 'aluno')
+        $totalUsers = User::where('role', 'student')->count();
+        $totalInstructors = User::where('role', 'instructor')->count();
+        $activeUsers = User::where('role', 'student')
             ->whereHas('bookings', function($q) use ($startDate) {
                 $q->where('created_at', '>=', $startDate);
             })->count();

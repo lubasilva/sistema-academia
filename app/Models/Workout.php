@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Carbon\Carbon;
 
 class Workout extends Model
@@ -42,9 +43,9 @@ class Workout extends Model
         return $this->hasMany(WorkoutExercise::class)->orderBy('order_in_workout');
     }
 
-    public function executions(): HasMany
+    public function executions(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        return $this->hasMany(WorkoutExecution::class);
+        return $this->hasManyThrough(WorkoutExecution::class, WorkoutExercise::class);
     }
 
     public function scopeActive($query)

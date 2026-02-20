@@ -128,6 +128,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     @empty
                         <div class="p-4 text-center text-muted">
                             <i class="bi bi-clipboard-x display-6 mb-3"></i>

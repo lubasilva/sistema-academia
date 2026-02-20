@@ -21,7 +21,7 @@ class WeeklyUsageSeeder extends Seeder
         $this->command->info('🎬 Iniciando simulação de uso semanal...');
 
         // Buscar todos os alunos com plano ativo
-        $students = User::where('role', 'aluno')
+        $students = User::where('role', 'student')
             ->whereHas('activePlan')
             ->with('activePlan.plan')
             ->get();

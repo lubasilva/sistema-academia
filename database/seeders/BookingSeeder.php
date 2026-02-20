@@ -20,7 +20,7 @@ class BookingSeeder extends Seeder
             return;
         }
 
-        $users = User::where('role', 'aluno')->get();
+        $users = User::where('role', 'student')->get();
         $schedules = Schedule::where('status', 'open')->get();
         
         foreach ($schedules->take(20) as $schedule) {

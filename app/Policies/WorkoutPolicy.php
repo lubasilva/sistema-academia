@@ -22,7 +22,7 @@ class WorkoutPolicy
     public function view(User $user, Workout $workout): bool
     {
         // Admin/Master/Instructor podem ver tudo, alunos só seus próprios treinos
-        return in_array($user->role, ['admin', 'master', 'instrutor']) || 
+        return in_array($user->role, ['admin', 'master', 'instructor']) || 
                $workout->student_id === $user->id ||
                $workout->instructor_id === $user->id;
     }
@@ -33,7 +33,7 @@ class WorkoutPolicy
     public function create(User $user): bool
     {
         // Admin, master e instructor podem criar treinos
-        return in_array($user->role, ['admin', 'master', 'instrutor']);
+        return in_array($user->role, ['admin', 'master', 'instructor']);
     }
 
     /**
