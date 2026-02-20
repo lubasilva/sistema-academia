@@ -269,4 +269,79 @@ class WorkoutController extends Controller
         return redirect()->route('workouts.index')
             ->with('success', 'Treino excluído com sucesso!');
     }
+
+    /**
+     * Adicionar exercício ao treino
+     */
+    public function addExercise(Request $request, Workout $workout)
+    {
+        $this->authorize('update', $workout);
+        
+        $validated = $request->validate([
+            'exercise_id' => 'required|exists:exercises,id',
+            'sets' => 'required|integer|min:1',
+            'reps' => 'required|string',
+            'initial_weight' => 'nullable|numeric|min:0',
+            'rest_seconds' => 'required|integer|min:10',
+            'notes' => 'nullable|string',
+        ]);
+
+        // Obter a próxima ordem
+        $maxOrder = $workout->exercises()->max('order_in_workout') ?? 0;
+
+        WorkoutExercise::create([
+            'workout_id' => $workout->id,
+            'exercise_id' => $validated['exercise_id'],
+            'order_in_workout' => $maxOrder + 1,
+            'sets' => $validated['sets'],
+            'reps' => $validated['reps'],
+            'initial_weight' => $validated['initial_weight'],
+            'rest_seconds' => $validated['rest_seconds'],
+            'notes' => $validated['notes'],
+        ]);
+
+        return back()->with('success', 'Exercício adicionado com sucesso!');
+    }
+
+    /**
+     * Atualizar exercício do treino
+     */
+    public function updateExercise(Request $request, Workout $workout, WorkoutExercise $workoutExercise)
+    {
+        $this->authorize('update', $workout);
+        
+        // Verificar se o exercício pertence ao treino
+        if ($workoutExercise->workout_id !== $workout->id) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'sets' => 'required|integer|min:1',
+            'reps' => 'required|string',
+            'initial_weight' => 'nullable|numeric|min:0',
+            'rest_seconds' => 'required|integer|min:10',
+            'notes' => 'nullable|string',
+        ]);
+
+        $workoutExercise->update($validated);
+
+        return back()->with('success', 'Exercício atualizado com sucesso!');
+    }
+
+    /**
+     * Remover exercício do treino
+     */
+    public function removeExercise(Workout $workout, WorkoutExercise $workoutExercise)
+    {
+        $this->authorize('update', $workout);
+        
+        // Verificar se o exercício pertence ao treino
+        if ($workoutExercise->workout_id !== $workout->id) {
+            abort(404);
+        }
+
+        $workoutExercise->delete();
+
+        return back()->with('success', 'Exercício removido com sucesso!');
+    }
 }

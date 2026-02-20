@@ -121,61 +121,47 @@
             <div class="col-lg-6 mb-4">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-white border-0 pb-0">
-                        <h6 class="text-primary fw-semibold">📊 Informações do Treino</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="text-primary fw-semibold">🎯 Exercícios do Treino</h6>
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
+                                <i class="bi bi-plus-circle me-1"></i>Adicionar
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div class="alert alert-info border-0">
-                            <h6 class="alert-heading">ℹ️ Sobre os Exercícios</h6>
-                            <p class="mb-0 small">
-                                Para editar os exercícios, cargas e repetições, utilize a visualização do treino. 
-                                Aqui você pode alterar apenas as informações gerais do treino.
-                            </p>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Total de Exercícios</label>
-                            <div class="input-group">
-                                <span class="input-group-text">🎯</span>
-                                <input type="text" class="form-control" value="{{ $workout->exercises->count() }} exercícios" disabled>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Criado por</label>
-                            <div class="input-group">
-                                <span class="input-group-text">👤</span>
-                                <input type="text" class="form-control" value="{{ $workout->instructor->name }}" disabled>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Criado em</label>
-                            <div class="input-group">
-                                <span class="input-group-text">📅</span>
-                                <input type="text" class="form-control" value="{{ $workout->created_at->format('d/m/Y H:i') }}" disabled>
-                            </div>
-                        </div>
-
                         @if($workout->exercises->count() > 0)
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Exercícios do Treino</label>
-                            <div class="list-group">
-                                @foreach($workout->exercises as $workoutExercise)
-                                <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <h6 class="mb-1 small fw-semibold">{{ $workoutExercise->exercise->name }}</h6>
-                                            <p class="mb-0 small text-muted">
-                                                {{ $workoutExercise->sets }}x{{ $workoutExercise->reps }}
-                                                @if($workoutExercise->initial_weight)
-                                                    • {{ $workoutExercise->initial_weight }}kg
-                                                @endif
-                                            </p>
-                                        </div>
+                        <div class="list-group">
+                            @foreach($workout->exercises as $workoutExercise)
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 small fw-semibold">{{ $workoutExercise->exercise->name }}</h6>
+                                        <p class="mb-0 small text-muted">
+                                            {{ $workoutExercise->sets }}x{{ $workoutExercise->reps }}
+                                            @if($workoutExercise->initial_weight)
+                                                • {{ $workoutExercise->initial_weight }}kg
+                                            @endif
+                                            • {{ floor($workoutExercise->rest_seconds / 60) }}:{{ str_pad($workoutExercise->rest_seconds % 60, 2, '0', STR_PAD_LEFT) }}
+                                        </p>
+                                    </div>
+                                    <div class="btn-group btn-group-sm ms-2">
+                                        <button type="button" class="btn btn-outline-primary" onclick="editExercise({{ $workoutExercise->id }}, '{{ $workoutExercise->sets }}', '{{ $workoutExercise->reps }}', '{{ $workoutExercise->initial_weight }}', '{{ $workoutExercise->rest_seconds }}', '{{ addslashes($workoutExercise->notes ?? '') }}')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger" onclick="removeExercise({{ $workoutExercise->id }}, '{{ $workoutExercise->exercise->name }}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
-                                @endforeach
                             </div>
+                            @endforeach
+                        </div>
+                        @else
+                        <div class="alert alert-info border-0 mb-0">
+                            <p class="mb-0 small">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Nenhum exercício adicionado ainda. Clique em "Adicionar" para incluir exercícios neste treino.
+                            </p>
                         </div>
                         @endif
                     </div>
@@ -198,6 +184,147 @@
         </div>
     </form>
 </div>
+
+<!-- Modal: Adicionar Exercício -->
+<div class="modal fade" id="addExerciseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('workouts.exercises.add', $workout) }}" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">➕ Adicionar Exercício</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="exercise_id" class="form-label fw-semibold">Exercício</label>
+                        <select class="form-select" name="exercise_id" id="exercise_id" required>
+                            <option value="">Selecione o exercício</option>
+                            @foreach($exercises as $muscleGroup => $groupExercises)
+                                <optgroup label="{{ ucfirst($muscleGroup) }}">
+                                    @foreach($groupExercises as $exercise)
+                                        <option value="{{ $exercise->id }}">{{ $exercise->name }}</option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="sets" class="form-label fw-semibold">Séries</label>
+                            <input type="number" class="form-control" name="sets" id="sets" min="1" value="3" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="reps" class="form-label fw-semibold">Repetições</label>
+                            <input type="text" class="form-control" name="reps" id="reps" value="12" placeholder="Ex: 12, 8-10" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="initial_weight" class="form-label fw-semibold">Peso (kg)</label>
+                            <input type="number" class="form-control" name="initial_weight" id="initial_weight" min="0" step="0.5" placeholder="0">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="rest_seconds" class="form-label fw-semibold">Descanso (s)</label>
+                            <input type="number" class="form-control" name="rest_seconds" id="rest_seconds" min="10" value="60" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label fw-semibold">Observações</label>
+                        <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Observações sobre execução, carga, etc..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Adicionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Editar Exercício -->
+<div class="modal fade" id="editExerciseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editExerciseForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-header">
+                    <h5 class="modal-title">✏️ Editar Exercício</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="edit_sets" class="form-label fw-semibold">Séries</label>
+                            <input type="number" class="form-control" name="sets" id="edit_sets" min="1" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="edit_reps" class="form-label fw-semibold">Repetições</label>
+                            <input type="text" class="form-control" name="reps" id="edit_reps" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="edit_initial_weight" class="form-label fw-semibold">Peso (kg)</label>
+                            <input type="number" class="form-control" name="initial_weight" id="edit_initial_weight" min="0" step="0.5">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="edit_rest_seconds" class="form-label fw-semibold">Descanso (s)</label>
+                            <input type="number" class="form-control" name="rest_seconds" id="edit_rest_seconds" min="10" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="edit_notes" class="form-label fw-semibold">Observações</label>
+                        <textarea class="form-control" name="notes" id="edit_notes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Form oculto para remover exercício -->
+<form id="removeExerciseForm" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+@push('scripts')
+<script>
+function editExercise(exerciseId, sets, reps, weight, rest, notes) {
+    document.getElementById('edit_sets').value = sets;
+    document.getElementById('edit_reps').value = reps;
+    document.getElementById('edit_initial_weight').value = weight || '';
+    document.getElementById('edit_rest_seconds').value = rest;
+    document.getElementById('edit_notes').value = notes || '';
+    
+    const form = document.getElementById('editExerciseForm');
+    form.action = "{{ route('workouts.exercises.update', [$workout, '__ID__']) }}".replace('__ID__', exerciseId);
+    
+    const modal = new bootstrap.Modal(document.getElementById('editExerciseModal'));
+    modal.show();
+}
+
+function removeExercise(exerciseId, exerciseName) {
+    if (confirm(`Deseja realmente remover o exercício "${exerciseName}" deste treino?`)) {
+        const form = document.getElementById('removeExerciseForm');
+        form.action = "{{ route('workouts.exercises.remove', [$workout, '__ID__']) }}".replace('__ID__', exerciseId);
+        form.submit();
+    }
+}
+</script>
+@endpush
 
 @push('styles')
 <style>

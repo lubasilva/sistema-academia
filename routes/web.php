@@ -25,6 +25,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('workouts', \App\Http\Controllers\WorkoutController::class);
     Route::post('workouts/simple', [\App\Http\Controllers\WorkoutController::class, 'storeSimple'])->name('workouts.store.simple');
     
+    // Gerenciar exercícios do treino
+    Route::post('workouts/{workout}/exercises', [\App\Http\Controllers\WorkoutController::class, 'addExercise'])->name('workouts.exercises.add');
+    Route::delete('workouts/{workout}/exercises/{workoutExercise}', [\App\Http\Controllers\WorkoutController::class, 'removeExercise'])->name('workouts.exercises.remove');
+    Route::put('workouts/{workout}/exercises/{workoutExercise}', [\App\Http\Controllers\WorkoutController::class, 'updateExercise'])->name('workouts.exercises.update');
+    
     // Pagamentos
     Route::resource('payments', \App\Http\Controllers\PaymentController::class)->only(['index', 'create', 'store', 'show']);
     
