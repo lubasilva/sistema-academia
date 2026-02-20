@@ -14,18 +14,7 @@ return new class extends Migration
     {
         $driver = DB::connection()->getDriverName();
 
-        if ($driver === 'mysql') {
-            // MySQL: Modifica o ENUM diretamente
-            DB::statement("ALTER TABLE credit_logs MODIFY COLUMN action_type ENUM(
-                'credit_added',
-                'extra_credit_added',
-                'credit_used',
-                'credit_returned',
-                'plan_created',
-                'plan_extended',
-                'plan_assigned'
-            ) NOT NULL");
-        } else {
+        if ($driver === 'pgsql') {
             // PostgreSQL: Adiciona valor ao tipo ENUM existente
             // Verifica se o valor já existe antes de adicionar
             $enumExists = DB::select("
@@ -39,6 +28,17 @@ return new class extends Migration
             if (empty($enumExists)) {
                 DB::statement("ALTER TYPE credit_logs_action_type_enum ADD VALUE 'plan_assigned'");
             }
+        } else {
+            // MySQL: Modifica o ENUM diretamente
+            DB::statement("ALTER TABLE credit_logs MODIFY COLUMN action_type ENUM(
+                'credit_added',
+                'extra_credit_added',
+                'credit_used',
+                'credit_returned',
+                'plan_created',
+                'plan_extended',
+                'plan_assigned'
+            ) NOT NULL");
         }
     }
 
@@ -47,11 +47,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Não é possível remover valores de um ENUM no PostgreSQL de forma simples
-        // No MySQL, revertemos
         $driver = DB::connection()->getDriverName();
 
         if ($driver === 'mysql') {
+            // MySQL: Reverte o ENUM
             DB::statement("ALTER TABLE credit_logs MODIFY COLUMN action_type ENUM(
                 'credit_added',
                 'extra_credit_added',
