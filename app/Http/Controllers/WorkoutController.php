@@ -46,7 +46,7 @@ class WorkoutController extends Controller
             ->get()
             ->groupBy('muscle_group');
         
-        $students = User::where('role', 'aluno')->orderBy('name')->get();
+        $students = User::where('role', 'student')->orderBy('name')->get();
         $selectedStudentId = $request->get('student_id');
         
         return view('workouts.create', compact('exercises', 'students', 'selectedStudentId'));
@@ -234,7 +234,7 @@ class WorkoutController extends Controller
             ->get()
             ->groupBy('muscle_group');
         
-        $students = User::where('role', 'aluno')->orderBy('name')->get();
+        $students = User::where('role', 'student')->orderBy('name')->get();
         $workout->load('exercises.exercise');
         
         return view('workouts.edit', compact('workout', 'exercises', 'students'));
