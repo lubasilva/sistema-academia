@@ -16,6 +16,10 @@
                 <i class="bi bi-clipboard-data"></i> Treinos
             </a>
             
+            <a href="{{ route('exercises.index') }}" class="nav-link {{ request()->routeIs('exercises.*') ? 'active' : '' }}">
+                <i class="bi bi-heart-pulse"></i> Exercícios
+            </a>
+            
             @if(auth()->user()->role === 'admin')
             <hr class="bg-secondary">
             <h6 class="text-white-50 text-uppercase small px-3">Administração</h6>

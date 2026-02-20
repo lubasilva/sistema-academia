@@ -30,6 +30,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('workouts/{workout}/exercises/{workoutExercise}', [\App\Http\Controllers\WorkoutController::class, 'removeExercise'])->name('workouts.exercises.remove');
     Route::put('workouts/{workout}/exercises/{workoutExercise}', [\App\Http\Controllers\WorkoutController::class, 'updateExercise'])->name('workouts.exercises.update');
     
+    // Biblioteca de Exercícios
+    Route::resource('exercises', \App\Http\Controllers\ExerciseController::class);
+    
     // Pagamentos
     Route::resource('payments', \App\Http\Controllers\PaymentController::class)->only(['index', 'create', 'store', 'show']);
     
